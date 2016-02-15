@@ -16,7 +16,10 @@ void delete_queue(uint8_t* queue_array);
 int file_size_bytes_io(char* file_path);
 int insert_byte(uint8_t* queue, int offset, uint8_t byte);
 int insert_int(uint8_t* queue, int offset, int integer);
-int queue_add_file_io(uint8_t* queue, int offset, char* file_path);
+int insert_string(uint8_t* queue, int offset, char* string);
+int insert_file_io(uint8_t* queue, int offset, char* file_path);
+int insert_temperature(uint8_t* queue, int offset, char* temp_data);
+void print_queue(uint8_t* queue, int bytes);
 
 
 int main(int argc, char* argv[])
@@ -29,14 +32,9 @@ int main(int argc, char* argv[])
 	// Create the queue
 	queue = create_queue(QUEUE_SIZE);
 
-	bytes_filled += queue_add_file_io(queue, bytes_filled, "/home/amaricich/Pictures/noodlebird.png");
-	bytes_filled += queue_add_file_io(queue, bytes_filled, "/home/amaricich/Pictures/noodlebird.png");
-	printf("%c\n", queue[0]);
-	printf("%i\n", queue[1]);
-	printf("%d\n", queue[2]);
-	printf("%d\n", queue[3]);
-	printf("%d\n", queue[4]);
-	printf("%c\n", queue[5]);
+	/*bytes_filled += insert_file_io(queue, bytes_filled, "/home/amaricich/Pictures/noodlebird.png");*/
+	bytes_filled += insert_temperature(queue, bytes_filled, "1:1.2123;2:213423");
+	print_queue(queue, bytes_filled+1);
 
 	/*void queue_add_temperature(queue, bytes_filled,"This is some temperature data: 1.22348347238");*/
 	// Pull in image data
@@ -75,7 +73,7 @@ void delete_queue(uint8_t* queue_array)
 int file_size_bytes_io(char* file_path)
 {
 	FILE* f;
-	char* mode = "r";
+	char* mode = "rb";
 
 	// Attempt to open the file
 	f = fopen(file_path, mode);
@@ -104,17 +102,28 @@ int insert_byte(uint8_t* queue, int offset, uint8_t byte)
 int insert_int(uint8_t* queue, int offset, int integer)
 {
 	int internal_offset = offset;
-	insert_byte(queue, internal_offset++, (integer >> (8*0)) & 0xff);
-	insert_byte(queue, internal_offset++, (integer >> (8*1)) & 0xff);
-	insert_byte(queue, internal_offset++, (integer >> (8*2)) & 0xff);
-	insert_byte(queue, internal_offset++, (integer >> (8*3)) & 0xff);
+	for (int i = 0; i < sizeof(int); i++)
+	{
+		insert_byte(queue, internal_offset++, (integer >> (8*i)) & 0xff);
+	}
 	return sizeof(int);
 }
 
-int queue_add_file_io(uint8_t* queue, int offset, char* file_path)
+int insert_string(uint8_t* queue, int offset, char* string)
+{
+	int internal_offset = offset;
+	int length = sizeof(string)*8;
+	for (int i = 0; i < length; i++)
+	{
+		internal_offset += insert_byte(queue, internal_offset, string[i]);
+	}
+	return length;
+}
+
+int insert_file_io(uint8_t* queue, int offset, char* file_path)
 {
 	FILE* f;
-	char* mode = "r";
+	char* mode = "rb";
 	int file_size;
 
 	/*Open file*/
@@ -125,9 +134,9 @@ int queue_add_file_io(uint8_t* queue, int offset, char* file_path)
 		exit(1);
 	} else {
 		/*Get the size of the file*/
-		fseek(f, 0L, SEEK_END);
+		fseek(f, 0, SEEK_END);
 		file_size = ftell(f);
-		fseek(f, 0L, SEEK_SET);
+		fseek(f, 0, SEEK_SET);
 		printf("********************\n");
 		printf("File size: %d bytes\n", file_size);
 
@@ -142,7 +151,16 @@ int queue_add_file_io(uint8_t* queue, int offset, char* file_path)
 			int internal_offset = offset;
 			/*Insert starting character and size*/
 			internal_offset += insert_byte(queue, internal_offset,(uint8_t)DELIMITER);
+			internal_offset += insert_byte(queue, internal_offset,(uint8_t)FILE_DATA);
 			internal_offset += insert_int(queue, internal_offset, file_size);
+
+			/*Insert all bytes in the file*/
+			char byte;
+			for (int i = 0; i < file_size; i++)
+			{
+				fread(&byte, (size_t)1, (size_t)1, f);
+				internal_offset += insert_byte(queue, internal_offset, (uint8_t)byte);
+			}
 
 			/*Close the file*/
 			fclose(f);
@@ -161,10 +179,20 @@ int queue_add_file_io(uint8_t* queue, int offset, char* file_path)
 
 }
 
-/*void queue_add_string(char* string)*/
-/*{*/
-/*}*/
+int insert_temperature(uint8_t* queue, int offset, char* temp_data)
+{
+	int internal_offset = offset;
+	internal_offset += insert_byte(queue, internal_offset, (uint8_t)DELIMITER);
+	internal_offset += insert_byte(queue, internal_offset, (uint8_t)TEMP_DATA);
+	internal_offset += insert_int(queue, internal_offset, sizeof(temp_data));
+	internal_offset += insert_string(queue, internal_offset, temp_data);
+	return internal_offset - offset;
+}
 
-/*void queue_add_temperature(uint8_t* queue, int offset, char* temp_data)*/
-/*{*/
-/*}*/
+void print_queue(uint8_t* queue, int bytes)
+{
+	for (int i = 0; i < bytes; i++)
+	{
+		printf("%d: %d\n", i, queue[i]);
+	}
+}
