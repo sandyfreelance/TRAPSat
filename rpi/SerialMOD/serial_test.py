@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import serial
 import array
 PORT = "/dev/ttyUSB0"
