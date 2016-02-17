@@ -44,7 +44,8 @@ struct bcm2835_peripheral gpio;  // They have to be found somewhere, but can't b
 #define GPIO_CLR0  *(gpio.addr + 10) // clears pins 0 --> 31 bits which are 1 ignores bits which are 0
 #define GPIO_CLR1  *(gpio.addr + 11) // clears pins 32 --> 53bits which are 1 ignores bits which are 0
 #define GPIO_SET(g) (((g) >= 32) && ((g) <= 53)) ? *(gpio.addr + 8) : ((g) >= 0) ?  *(gpio.addr + 7) : NULL;
-#define GPIO_READ(g)  *(gpio.addr + 13) &= (1<<(g))
+#define GPIO_READ0(g)  *(gpio.addr + 13) &= (1<<(g))
+#define GPIO_READ1(g)  *(gpio.addr + 14) && (1<<(g))
 /**/
 
 #endif /*Definition of _RPI_GPIO_PERIPH_H_  */
