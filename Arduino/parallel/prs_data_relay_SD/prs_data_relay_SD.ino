@@ -1,20 +1,12 @@
-#include <Bridge.h>
-#include <FileIO.h>
+#include <SPI.h>
+#include <SD.h>
 
-#if defined(__AVR_YUN__) // doesn't work
-#define YUN 1
-#else
-#define YUN 0
-#endif
+// Mega pins
+int parallel_pins[8] = {35,37,39,41,43,45,47,49}; 
+int parallel_prs = 51;
 
-//if(YUN){
-  int parallel_pins[8] = {2,3,4,5,6,7,8,9};
-  int parallel_prs = 13;
-
-//else { // Mega
-//  int parallel_pins[8] = {35,37,39,41,43,45,47,49};
-//  int parallel_prs = 51;
-
+// File IO
+File data_log;
 
 
 unsigned char parallel_buff;
@@ -46,11 +38,20 @@ void setup() {
    */
   Serial.begin(115200);
   while(!Serial);
-    //if(YUN){
-    Serial.println("Compiling for Yun.");
-    Bridge.begin();
-    FileSystem.begin();
-  //}
+  if(!SD.begin()) {
+    Serial.println("Setup Failed.");
+    while(1) ;
+  }
+
+  data_log=SD.open("data_log.raw", FILE_WRITE);
+  data_log.close();
+
+  if(!SD.exists("data_log.raw")) {
+    Serial.println("Error: data_log does not exist.");
+    while(1) ;
+  }
+
+  data_log=SD.open("data_log.raw", FILE_WRITE);
   Serial.println("Setup Complete");
   delay(1000);
 }
@@ -78,15 +79,10 @@ void loop() {
   
   Serial.write(parallel_buff);
 
-  //if(YUN){
-    File data_log = FileSystem.open("/mnt/sda1/data_log.raw");
-    if(data_log == true){
-      Serial.print("Number of bytes written: ");
-      Serial.println(data_log.write(parallel_buff));
-      data_log.flush();
-      data_log.close();
-    }
-  //}
+  int bytes_written = data_log.write(parallel_buff);
+  
+  Serial.print("Bytes written to file: ");
+  Serial.println(bytes_written);
   
   delayMicroseconds(100);
   
