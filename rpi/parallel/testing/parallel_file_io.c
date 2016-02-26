@@ -1,3 +1,7 @@
+/*
+ * This is the base code to be used for the Parallel Telemetry lines.
+ */
+
 #include <stdio.h>
 #include <fcntl.h>
 #include <wiringPi.h>
