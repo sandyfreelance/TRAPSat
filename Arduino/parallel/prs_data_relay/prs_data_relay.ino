@@ -55,13 +55,13 @@ void loop() {
   
   Serial.write(parallel_buff);
   
-  delayMicroseconds(100);
+  //delayMicroseconds(100);
   
-  /*
+  
   while(micros() - timer < 105)
   {
     //Serial.println("PRS Delay");
   }
-  */
+  
 
 }

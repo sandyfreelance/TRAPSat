@@ -9,9 +9,12 @@ int parallel_prs = 51;
 File data_log;
 
 
-unsigned char parallel_buff;
+//unsigned char parallel_buff;
+byte parallel_buff;
 int i;
 unsigned long timer;
+
+boolean start = 0;
 
 /*
  * Buffer for Debugging Start/Stop Flag 
@@ -60,7 +63,7 @@ void loop() {
   /*
    * PRS loop delay of 100.33 microseconds
    */
-  Serial.println("Strobing...");
+  //Serial.println("Strobing...");
   digitalWrite(parallel_prs, HIGH);
   delayMicroseconds(1);
   digitalWrite(parallel_prs, LOW);
@@ -74,23 +77,32 @@ void loop() {
     }
   }
   
-
-  //Serial.print("Byte data: ");
+ // if(parallel_buff != 0x00) { // wait for data
+ //   start = 1;
+ // }
   
-  Serial.write(parallel_buff);
-
-  int bytes_written = data_log.write(parallel_buff);
+  //if (start) {
+    //Serial.print("Byte data: ");
+    //Serial.write(parallel_buff);
+    //Serial.println("");
   
-  Serial.print("Bytes written to file: ");
-  Serial.println(bytes_written);
+    //int bytes_written = data_log.write(parallel_buff);
+    data_log.write(parallel_buff);
+    //Serial.print("Bytes written to file: ");
+    //Serial.println(bytes_written);
+  //}
+  //delayMicroseconds(100);
   
-  delayMicroseconds(100);
+  if(timer > 30000000) // 0.5 minutes
+  {
+    Serial.println("Closing file...");
+    data_log.flush();
+    data_log.close();
+    while(1) ; // HOLD
+  }
   
-  /*
-  while(micros() - timer < 105)
+  while((micros() - timer) < 105)
   {
     //Serial.println("PRS Delay");
   }
-  */
-
 }
