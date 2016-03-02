@@ -1,3 +1,7 @@
+/*
+ * This is the base code to be used for the Parallel Telemetry lines.
+ */
+
 #include <stdio.h>
 #include <fcntl.h>
 #include <wiringPi.h>
@@ -54,7 +58,7 @@ int main(int argc, char* argv[])
         close(src_data_file);
         return 0;
     }
-    
+
     /*
     ** Set Parallel Pins to Output using WiringPi 
     */
@@ -64,7 +68,7 @@ int main(int argc, char* argv[])
     }
     printf("Pins Initialized Correctly\n");
     sleep(1);
-    
+
     /*
     ** Write Loop
     */
@@ -73,7 +77,8 @@ int main(int argc, char* argv[])
         if( (digitalRead(GPIO_PIN_PRS) == HIGH)  && (debounce == 0) )
         {
             parallel_write(data);
-            debounce = 1;
+	    printf("%c", (char)data);
+	    debounce = 1;
         }
         else if( (digitalRead(GPIO_PIN_PRS) == HIGH)  && (debounce >= 1) )
         {
@@ -88,29 +93,29 @@ int main(int argc, char* argv[])
             */
             usleep(5);
 
-            /*
-            ** get new data
-            */
-            switch(send_state)
+            //
+            // get new data
+            //
+           /* switch(send_state)
             {
                 case 0: 
-                    /*
-                    ** Send State: START NULL BYTE
-                    */
+                    //
+                    // Send State: START NULL BYTE
+                    //
                     data = 0x00;
                     send_state = 1;
                     break;
                 case 1: 
-                    /*
-                    ** Send State: START FLAG
-                    */
+                    //
+                    // Send State: START FLAG
+                    //
                     data = START_MAIN_FLAG;
                     send_state = 2;
                     break;
                 case 2: 
-                    /*
-                    ** Send State: DATA ID
-                    */
+                    //
+                    // Send State: DATA ID
+                    //
                     switch(src_state)
                     {
                         case SRC_PICT_ST:
@@ -124,35 +129,35 @@ int main(int argc, char* argv[])
                     send_state = 3;
                     break;
                 case 3: 
-                    /*
-                    ** Send State: START SIZE MSB
-                    */
+                    //
+                    // Send State: START SIZE MSB
+                    //
                     data = file_length_msb;
                     send_state = 4;
                     break;
                 case 4: 
-                    /*
-                    ** Send State: START SIZE LSB
-                    */
+                    //
+                    // Send State: START SIZE LSB
+                    //
                     data = file_length_lsb;
                     send_state = 5;
                     break;
                 case 5: 
-                    /*
-                    ** Send State: START NULL BYTE
-                    */
+                    //
+                    // Send State: START NULL BYTE
+                    //
                     data = 0x00;
                     send_state = 6;
                     break;
                 case 6:
-                    /*
-                    ** Send State: Update Data from Source 
-                    */
+               */   //
+                    // Send State: Update Data from Source 
+                    //
                     if((ret = read(src_data_file, &src_data_buf, 1)) == 0)
                     {
                         printf("Final State:%d\n", final_state);
-                        
-                        switch(final_state)
+
+                     /*   switch(final_state)
                         {
                             case 0:
                                 data = 0x00;
@@ -170,10 +175,24 @@ int main(int argc, char* argv[])
                                 data = 0x00;
                                 final_state = 4;
                                 break;
-                            case 4:
-                                /*
-                                ** Reset States
-                                */
+               		    case 4:
+                                //
+                		// Send State: START SIZE LSB
+				//
+		                data = file_length_lsb;
+                 		send_state = 5;
+                 		break;
+                	     case 5: 
+                    		//
+                    		// Send State: START NULL BYTE
+                    		//
+                    		data = 0x00;
+                    		send_state = 6;
+                    		break;
+                            case 6:
+                                //
+                                // Reset States
+                                //
                                 final_state = 0;
                                 send_state = 0;
                                 close(src_data_file);
@@ -183,15 +202,18 @@ int main(int argc, char* argv[])
                                 final_state = 0;
                                 data = 0x00;
                         }
+		    */
+			close(src_data_file);
+			return 0;
                     }
                     else
                     {
                         data = src_data_buf;
                     }
-                    break;
-                default: 
+            //        break;
+            /*    default: 
                     data = 0x00;
-            }
+            }*/
 
             //printf("debounce reached: %d\n", debounce);
             debounce = 0;
@@ -220,6 +242,6 @@ int parallel_write(unsigned char data)
             digitalWrite(gpio_pin, LOW);
         }
     }
-    //printf("Byte Data Written: %X\n", data);
+    printf("Byte Data Written: %X\n", data);
 	return 0;
 }
