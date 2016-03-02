@@ -77,8 +77,8 @@ int main(int argc, char* argv[])
         if( (digitalRead(GPIO_PIN_PRS) == HIGH)  && (debounce == 0) )
         {
             parallel_write(data);
-	    printf("%c", (char)data);
-	    debounce = 1;
+		    printf("%c", (char)data);
+		    debounce = 1;
         }
         else if( (digitalRead(GPIO_PIN_PRS) == HIGH)  && (debounce >= 1) )
         {
@@ -91,129 +91,24 @@ int main(int argc, char* argv[])
             ** This allows microcontroller to read data
             ** may slow it down TOO much
             */
-            usleep(5);
+            //usleep(5); // Seems to be slowing us down too much.
+            delayMicroseconds(5); // from wiringPi, uses a loop that calls gettimeofday() system call -- this does use 100% CPU while calculating.
 
             //
             // get new data
             //
-           /* switch(send_state)
+            // Send State: Update Data from Source 
+            //
+            if((ret = read(src_data_file, &src_data_buf, 1)) == 0)
             {
-                case 0: 
-                    //
-                    // Send State: START NULL BYTE
-                    //
-                    data = 0x00;
-                    send_state = 1;
-                    break;
-                case 1: 
-                    //
-                    // Send State: START FLAG
-                    //
-                    data = START_MAIN_FLAG;
-                    send_state = 2;
-                    break;
-                case 2: 
-                    //
-                    // Send State: DATA ID
-                    //
-                    switch(src_state)
-                    {
-                        case SRC_PICT_ST:
-                            data = START_PICT_FLAG;
-                            break;
-                        case SRC_TEMP_ST:
-                            data = START_TEMP_FLAG;
-                            break;
-                        default: data = START_OTHR_FLAG;
-                    }
-                    send_state = 3;
-                    break;
-                case 3: 
-                    //
-                    // Send State: START SIZE MSB
-                    //
-                    data = file_length_msb;
-                    send_state = 4;
-                    break;
-                case 4: 
-                    //
-                    // Send State: START SIZE LSB
-                    //
-                    data = file_length_lsb;
-                    send_state = 5;
-                    break;
-                case 5: 
-                    //
-                    // Send State: START NULL BYTE
-                    //
-                    data = 0x00;
-                    send_state = 6;
-                    break;
-                case 6:
-               */   //
-                    // Send State: Update Data from Source 
-                    //
-                    if((ret = read(src_data_file, &src_data_buf, 1)) == 0)
-                    {
-                        printf("Final State:%d\n", final_state);
-
-                     /*   switch(final_state)
-                        {
-                            case 0:
-                                data = 0x00;
-                                final_state = 1;
-                                break;
-                            case 1:
-                                data = START_MAIN_FLAG;
-                                final_state = 2;
-                                break;
-                            case 2:
-                                data = START_STOP_FLAG;
-                                final_state = 3;
-                                break;
-                            case 3:
-                                data = 0x00;
-                                final_state = 4;
-                                break;
-               		    case 4:
-                                //
-                		// Send State: START SIZE LSB
-				//
-		                data = file_length_lsb;
-                 		send_state = 5;
-                 		break;
-                	     case 5: 
-                    		//
-                    		// Send State: START NULL BYTE
-                    		//
-                    		data = 0x00;
-                    		send_state = 6;
-                    		break;
-                            case 6:
-                                //
-                                // Reset States
-                                //
-                                final_state = 0;
-                                send_state = 0;
-                                close(src_data_file);
-                                return 0;
-                                break;
-                            default:
-                                final_state = 0;
-                                data = 0x00;
-                        }
-		    */
-			close(src_data_file);
-			return 0;
-                    }
-                    else
-                    {
-                        data = src_data_buf;
-                    }
-            //        break;
-            /*    default: 
-                    data = 0x00;
-            }*/
+                printf("Final State:%d\n", final_state);
+				close(src_data_file);
+				return 0;
+            }
+            else
+            {
+                data = src_data_buf;
+            }
 
             //printf("debounce reached: %d\n", debounce);
             debounce = 0;
@@ -225,7 +120,7 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-int parallel_write(unsigned char data)
+int parallel_write(unsigned char data) // We should time this, could be what's slowing us down.
 {
     int gpio_pin = 0;
     int i = 0;
@@ -242,6 +137,6 @@ int parallel_write(unsigned char data)
             digitalWrite(gpio_pin, LOW);
         }
     }
-    printf("Byte Data Written: %X\n", data);
+    //printf("Byte Data Written: %X\n", data);
 	return 0;
 }
