@@ -17,12 +17,13 @@
 #define START_OTHR_FLAG 0x21 /* '!' */
 
 int parallel_write(unsigned char data);
+//RPi CM
+int GPIO_PIN_BUS[8] = {32, 33, 34, 35, 36, 37, 38, 39};
+int GPIO_PIN_PRS = 40;
 
-//int GPIO_PIN_BUS[8] = {32, 33, 34, 35, 36, 37, 38, 39};
-//int GPIO_PIN_PRS = 40;
-
-int GPIO_PIN_BUS[8] = {18, 23, 24, 25, 8, 7, 12, 16};
-int GPIO_PIN_PRS = 02;
+// RPi B+
+//int GPIO_PIN_BUS[8] = {18, 23, 24, 25, 8, 7, 12, 16};
+//int GPIO_PIN_PRS = 02;
 
 int main(int argc, char* argv[])
 {
@@ -38,8 +39,12 @@ int main(int argc, char* argv[])
     unsigned char file_length_msb, file_length_lsb;
     struct stat st;
     int src_data_file;
-    //wiringPiSetup();
-    wiringPiSetupGpio();
+    //RPi CM
+	wiringPiSetup();
+
+    //RPi B+
+	//wiringPiSetupGpio();
+
     pinMode(GPIO_PIN_PRS, INPUT);
 
     /*
@@ -79,7 +84,8 @@ int main(int argc, char* argv[])
 wiringPiSetupSys();
 delayMicroseconds(300);
 unsigned int t0, tf, t;
-    for(;;)
+//int i;
+    for(i=1; i<=10; i++)
     {
 	t0 = micros();
         if( /*(digitalRead(GPIO_PIN_PRS) == HIGH)  &&*/ (debounce == 0) )
@@ -104,10 +110,10 @@ unsigned int t0, tf, t;
 
 		//For Test
 		tf = micros();
-		printf("t0: %d \ntf: %d \n", t0, tf);
-		printf("One loop iteration took: %d microseconds.\n", tf-t0);
-		printf("One parallel_write() call took %d microseconds.\n", t);
-		return 0;
+		//printf("t0: %d \ntf: %d \n", t0, tf);
+		printf("loop iteration %d took: %d microseconds.\n", i, tf-t0);
+		printf("parallel_write() call %d took %d microseconds.\n", i, t);
+		//return 0;
             //
             // get new data
             //
@@ -153,6 +159,6 @@ int parallel_write(unsigned char data) // We should time this, could be what's s
         }
     }
 	tf=micros();
-    //printf("Byte Data Written: %X\n", data);
+    printf("Byte Data Written: %X\n", data);
 	return tf-t0;//0;
 }
