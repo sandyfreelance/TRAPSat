@@ -21,10 +21,11 @@ boolean start = 0;
  */
 unsigned char flag_buff[4];
 
+
+
 void setup() {  
 
   pinMode(parallel_prs, OUTPUT);
-  
   /*
    * Not sure if this is necessary, may by default be low.. 
    */
@@ -40,12 +41,16 @@ void setup() {
    * Ready: start/wait for serial monitor
    */
   Serial.begin(115200);
-  while(!Serial);
+  //while(!Serial);
   if(!SD.begin()) {
     Serial.println("Setup Failed.");
     while(1) ;
   }
-
+  
+  if(SD.exists("data_log.raw")) {
+    SD.remove("data_log.raw");
+    Serial.println("removed old data_log file.");
+  }
   data_log=SD.open("data_log.raw", FILE_WRITE);
   data_log.close();
 
@@ -64,9 +69,11 @@ void loop() {
    * PRS loop delay of 100.33 microseconds
    */
   //Serial.println("Strobing...");
+  //blink();
   digitalWrite(parallel_prs, HIGH);
-  delayMicroseconds(1);
+  delayMicroseconds(10);
   digitalWrite(parallel_prs, LOW);
+  //blink();
   timer = micros();
   while(micros() - timer < 5) 
   {
@@ -87,13 +94,21 @@ void loop() {
     //Serial.println("");
   
     //int bytes_written = data_log.write(parallel_buff);
-    data_log.write(parallel_buff);
+    if(parallel_buff != 0x00) {
+      data_log.write("parallel_buff: ");
+      data_log.write(parallel_buff);
+      data_log.write('\n');
+      parallel_buff = 0x00;
+    }
+    
     //Serial.print("Bytes written to file: ");
-    //Serial.println(bytes_written);
+    //if(parallel_buff != 0x00){
+    //Serial.println((char)parallel_buff);
+    //}
   //}
   //delayMicroseconds(100);
   
-  if(timer > 30000000) // 0.5 minutes
+  if(micros() > 30000000) // 0.5 minutes
   {
     Serial.println("Closing file...");
     data_log.flush();
@@ -103,6 +118,13 @@ void loop() {
   
   while((micros() - timer) < 105)
   {
+    delayMicroseconds(1);
+    /*
+    Serial.print("micros: ");
+    Serial.println(micros());
+    Serial.print("timer: ");
+    Serial.println(timer);
+    */
     //Serial.println("PRS Delay");
   }
 }
