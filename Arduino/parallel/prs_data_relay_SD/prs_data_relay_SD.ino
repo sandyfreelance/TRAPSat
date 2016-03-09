@@ -41,7 +41,7 @@ void setup() {
    * Ready: start/wait for serial monitor
    */
   Serial.begin(115200);
-  //while(!Serial);
+  while(!Serial);
   if(!SD.begin()) {
     Serial.println("Setup Failed.");
     while(1) ;
@@ -69,62 +69,40 @@ void loop() {
    * PRS loop delay of 100.33 microseconds
    */
   //Serial.println("Strobing...");
-  //blink();
   digitalWrite(parallel_prs, HIGH);
-  delayMicroseconds(10);
+  delayMicroseconds(5);
   digitalWrite(parallel_prs, LOW);
-  //blink();
   timer = micros();
-  while(micros() - timer < 5) 
+  
+  parallel_buff = 0x00;
+  for(i = 0; i < 8; i++)
   {
-    parallel_buff = 0x00;
-    for(i = 0; i < 8; i++)
-    {
-      parallel_buff |= digitalRead(parallel_pins[i]) << i;
-    }
+    parallel_buff |= digitalRead(parallel_pins[i]) << i;
   }
   
- // if(parallel_buff != 0x00) { // wait for data
- //   start = 1;
- // }
+  while(micros() - timer < 5){delayMicroseconds(1);} // wait
   
-  //if (start) {
-    //Serial.print("Byte data: ");
-    //Serial.write(parallel_buff);
-    //Serial.println("");
+  data_log.write(parallel_buff); // write to file on SD
   
-    //int bytes_written = data_log.write(parallel_buff);
-    if(parallel_buff != 0x00) {
-      data_log.write("parallel_buff: ");
-      data_log.write(parallel_buff);
-      data_log.write('\n');
-      parallel_buff = 0x00;
-    }
-    
-    //Serial.print("Bytes written to file: ");
-    //if(parallel_buff != 0x00){
-    //Serial.println((char)parallel_buff);
-    //}
-  //}
-  //delayMicroseconds(100);
+  //int t0 = micros();
+  //data_log.flush();
+  //int tf = micros();
   
-  if(micros() > 30000000) // 0.5 minutes
+  //Serial.print("flush took ");
+  //Serial.print(tf-t0);
+  //Serial.println(" micros");
+  
+  if(micros() > 5000000) // 5 secs
   {
-    Serial.println("Closing file...");
+    //Serial.println("Closing file...");
     data_log.flush();
     data_log.close();
-    while(1) ; // HOLD
+    Serial.println("File closed.");
+    while(1) ; // HOLD 
   }
   
-  while((micros() - timer) < 105)
+  while((micros() - timer) < 105) // wait
   {
-    delayMicroseconds(1);
-    /*
-    Serial.print("micros: ");
-    Serial.println(micros());
-    Serial.print("timer: ");
-    Serial.println(timer);
-    */
-    //Serial.println("PRS Delay");
+    delayMicroseconds(1); 
   }
 }
