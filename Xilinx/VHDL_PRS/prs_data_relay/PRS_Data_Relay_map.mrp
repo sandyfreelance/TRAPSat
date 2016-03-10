@@ -1,0 +1,218 @@
+Release 14.7 Map P.20131013 (nt64)
+Xilinx Mapping Report File for Design 'PRS_Data_Relay'
+
+Design Information
+------------------
+Command Line   : map -intstyle ise -p xc6slx16-csg324-3 -w -logic_opt off -ol
+high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off
+-pr off -lc off -power off -o PRS_Data_Relay_map.ncd PRS_Data_Relay.ngd
+PRS_Data_Relay.pcf 
+Target Device  : xc6slx16
+Target Package : csg324
+Target Speed   : -3
+Mapper Version : spartan6 -- $Revision: 1.55 $
+Mapped Date    : Thu Mar 10 15:20:35 2016
+
+Design Summary
+--------------
+Number of errors:      0
+Number of warnings:    1
+Slice Logic Utilization:
+  Number of Slice Registers:                     0 out of  18,224    0%
+  Number of Slice LUTs:                          0 out of   9,112    0%
+
+Slice Logic Distribution:
+  Number of occupied Slices:                     0 out of   2,278    0%
+  Number of MUXCYs used:                         0 out of   4,556    0%
+  Number of LUT Flip Flop pairs used:            0
+
+IO Utilization:
+  Number of bonded IOBs:                         1 out of     232    1%
+    Number of LOCed IOBs:                        1 out of       1  100%
+
+Specific Feature Utilization:
+  Number of RAMB16BWERs:                         0 out of      32    0%
+  Number of RAMB8BWERs:                          0 out of      64    0%
+  Number of BUFIO2/BUFIO2_2CLKs:                 0 out of      32    0%
+  Number of BUFIO2FB/BUFIO2FB_2CLKs:             0 out of      32    0%
+  Number of BUFG/BUFGMUXs:                       0 out of      16    0%
+  Number of DCM/DCM_CLKGENs:                     0 out of       4    0%
+  Number of ILOGIC2/ISERDES2s:                   0 out of     248    0%
+  Number of IODELAY2/IODRP2/IODRP2_MCBs:         0 out of     248    0%
+  Number of OLOGIC2/OSERDES2s:                   0 out of     248    0%
+  Number of BSCANs:                              0 out of       4    0%
+  Number of BUFHs:                               0 out of     128    0%
+  Number of BUFPLLs:                             0 out of       8    0%
+  Number of BUFPLL_MCBs:                         0 out of       4    0%
+  Number of DSP48A1s:                            0 out of      32    0%
+  Number of ICAPs:                               0 out of       1    0%
+  Number of MCBs:                                0 out of       2    0%
+  Number of PCILOGICSEs:                         0 out of       2    0%
+  Number of PLL_ADVs:                            0 out of       2    0%
+  Number of PMVs:                                0 out of       1    0%
+  Number of STARTUPs:                            0 out of       1    0%
+  Number of SUSPEND_SYNCs:                       0 out of       1    0%
+
+Average Fanout of Non-Clock Nets:                0.00
+
+Peak Memory Usage:  343 MB
+Total REAL time to MAP completion:  10 secs 
+Total CPU time to MAP completion:   10 secs 
+
+Table of Contents
+-----------------
+Section 1 - Errors
+Section 2 - Warnings
+Section 3 - Informational
+Section 4 - Removed Logic Summary
+Section 5 - Removed Logic
+Section 6 - IOB Properties
+Section 7 - RPMs
+Section 8 - Guide Report
+Section 9 - Area Group and Partition Summary
+Section 10 - Timing Report
+Section 11 - Configuration String Information
+Section 12 - Control Set Information
+Section 13 - Utilization by Hierarchy
+
+Section 1 - Errors
+------------------
+
+Section 2 - Warnings
+--------------------
+WARNING:MapLib:701 - Signal prs connected to top level port prs has been
+   removed.
+
+Section 3 - Informational
+-------------------------
+INFO:LIT:243 - Logical network parallel_bus<7> has no load.
+INFO:LIT:395 - The above info message is repeated 9 more times for the following
+   (max. 5 shown):
+   parallel_bus<6>,
+   parallel_bus<5>,
+   parallel_bus<4>,
+   parallel_bus<3>,
+   parallel_bus<2>
+   To see the details of these info messages, please use the -detail switch.
+INFO:MapLib:562 - No environment variables are currently set.
+INFO:Pack:1716 - Initializing temperature to 85.000 Celsius. (default - Range:
+   0.000 to 85.000 Celsius)
+INFO:Pack:1720 - Initializing voltage to 1.140 Volts. (default - Range: 1.140 to
+   1.260 Volts)
+INFO:Map:215 - The Interim Design Summary has been generated in the MAP Report
+   (.mrp).
+INFO:Pack:1650 - Map created a placed design.
+
+Section 4 - Removed Logic Summary
+---------------------------------
+  21 block(s) removed
+  20 signal(s) removed
+
+Section 5 - Removed Logic
+-------------------------
+
+The trimmed logic reported below is either:
+   1. part of a cycle
+   2. part of disabled logic
+   3. a side-effect of other trimmed logic
+
+The signal "state[6]_GND_5_o_add_4_OUT<6>" is unused and has been removed.
+ Unused block "Madd_state[6]_GND_5_o_add_4_OUT_xor<6>11" (ROM) removed.
+  The signal "state_6" is unused and has been removed.
+   Unused block "state_6" (LATCH) removed.
+    The signal "state[6]_PWR_5_o_equal_3_o" is unused and has been removed.
+     Unused block "state[6]_PWR_5_o_equal_3_o<6>1" (ROM) removed.
+      The signal "state_0" is unused and has been removed.
+       Unused block "state_0" (LATCH) removed.
+        The signal "state[6]_GND_5_o_add_4_OUT<0>" is unused and has been removed.
+         Unused block "Madd_state[6]_GND_5_o_add_4_OUT_xor<0>11_INV_0" (BUF) removed.
+        The signal "state[6]_GND_5_o_equal_4_o" is unused and has been removed.
+         Unused block "state[6]_GND_5_o_equal_4_o<6>1" (ROM) removed.
+          The signal "state_3" is unused and has been removed.
+           Unused block "state_3" (LATCH) removed.
+            The signal "state[6]_GND_5_o_add_4_OUT<3>" is unused and has been removed.
+             Unused block "Madd_state[6]_GND_5_o_add_4_OUT_xor<3>11" (ROM) removed.
+              The signal "state_1" is unused and has been removed.
+               Unused block "state_1" (LATCH) removed.
+                The signal "state[6]_GND_5_o_add_4_OUT<1>" is unused and has been removed.
+                 Unused block "Madd_state[6]_GND_5_o_add_4_OUT_xor<1>11" (ROM) removed.
+              The signal "state_2" is unused and has been removed.
+               Unused block "state_2" (LATCH) removed.
+                The signal "state[6]_GND_5_o_add_4_OUT<2>" is unused and has been removed.
+                 Unused block "Madd_state[6]_GND_5_o_add_4_OUT_xor<2>11" (ROM) removed.
+          The signal "state_5" is unused and has been removed.
+           Unused block "state_5" (LATCH) removed.
+            The signal "state[6]_GND_5_o_add_4_OUT<5>" is unused and has been removed.
+             Unused block "Madd_state[6]_GND_5_o_add_4_OUT_xor<5>11" (ROM) removed.
+              The signal "state_4" is unused and has been removed.
+               Unused block "state_4" (LATCH) removed.
+                The signal "state[6]_GND_5_o_add_4_OUT<4>" is unused and has been removed.
+                 Unused block "Madd_state[6]_GND_5_o_add_4_OUT_xor<4>11" (ROM) removed.
+          The signal "state[6]_GND_5_o_equal_4_o<6>1" is unused and has been removed.
+           Unused block "state[6]_GND_5_o_equal_4_o<6>11" (ROM) removed.
+  The signal "Madd_state[6]_GND_5_o_add_4_OUT_cy<4>" is unused and has been
+removed.
+   Unused block "Madd_state[6]_GND_5_o_add_4_OUT_cy<4>11" (ROM) removed.
+The signal "prs_sig" is unused and has been removed.
+ Unused block "prs_sig" (LATCH) removed.
+The signal "prs" is unused and has been removed.
+ Unused block "prs_OBUF" (BUF) removed.
+Unused block "prs" (PAD) removed.
+
+Section 6 - IOB Properties
+--------------------------
+
++---------------------------------------------------------------------------------------------------------------------------------------------------------+
+| IOB Name                           | Type             | Direction | IO Standard          | Diff  | Drive    | Slew | Reg (s)      | Resistor | IOB      |
+|                                    |                  |           |                      | Term  | Strength | Rate |              |          | Delay    |
++---------------------------------------------------------------------------------------------------------------------------------------------------------+
+| clock                              | IOB              | INPUT     | LVCMOS25             |       |          |      |              |          |          |
++---------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+Section 7 - RPMs
+----------------
+
+Section 8 - Guide Report
+------------------------
+Guide not run on this design.
+
+Section 9 - Area Group and Partition Summary
+--------------------------------------------
+
+Partition Implementation Status
+-------------------------------
+
+  No Partitions were found in this design.
+
+-------------------------------
+
+Area Group Information
+----------------------
+
+  No area groups were found in this design.
+
+----------------------
+
+Section 10 - Timing Report
+--------------------------
+A logic-level (pre-route) timing report can be generated by using Xilinx static
+timing analysis tools, Timing Analyzer (GUI) or TRCE (command line), with the
+mapped NCD and PCF files. Please note that this timing report will be generated
+using estimated delay information. For accurate numbers, please generate a
+timing report with the post Place and Route NCD file.
+
+For more information about the Timing Analyzer, consult the Xilinx Timing
+Analyzer Reference Manual; for more information about TRCE, consult the Xilinx
+Command Line Tools User Guide "TRACE" chapter.
+
+Section 11 - Configuration String Details
+-----------------------------------------
+Use the "-detail" map option to print out Configuration Strings
+
+Section 12 - Control Set Information
+------------------------------------
+Use the "-detail" map option to print out Control Set Information.
+
+Section 13 - Utilization by Hierarchy
+-------------------------------------
+Use the "-detail" map option to print out the Utilization by Hierarchy section.

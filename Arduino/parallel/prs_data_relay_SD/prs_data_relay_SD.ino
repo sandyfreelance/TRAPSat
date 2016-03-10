@@ -2,8 +2,12 @@
 #include <SD.h>
 
 // Mega pins
-int parallel_pins[8] = {35,37,39,41,43,45,47,49}; 
-int parallel_prs = 51;
+//int parallel_pins[8] = {35,37,39,41,43,45,47,49}; 
+//int parallel_prs = 51;
+
+// Teensy 3.2 pins
+int parallel_pins[8] = {5, 6, 7, 8, 9, 10, 11, 12};
+int parallel_prs = 13;
 
 // File IO
 File data_log;
@@ -25,11 +29,11 @@ unsigned char flag_buff[4];
 
 void setup() {  
 
-  pinMode(parallel_prs, OUTPUT);
+  pinMode(parallel_prs, INPUT);
   /*
    * Not sure if this is necessary, may by default be low.. 
    */
-  digitalWrite(parallel_prs, LOW); 
+ // digitalWrite(parallel_prs, LOW); 
   
   for(i = 0; i < 8; i++)
   {
@@ -42,7 +46,7 @@ void setup() {
    */
   Serial.begin(115200);
   while(!Serial);
-  if(!SD.begin()) {
+/*  if(!SD.begin()) {
     Serial.println("Setup Failed.");
     while(1) ;
   }
@@ -60,18 +64,22 @@ void setup() {
   }
 
   data_log=SD.open("data_log.raw", FILE_WRITE);
+*/
   Serial.println("Setup Complete");
   delay(1000);
 }
 
 void loop() {
+
+  unsigned long d =0;
   /*
    * PRS loop delay of 100.33 microseconds
    */
   //Serial.println("Strobing...");
-  digitalWrite(parallel_prs, HIGH);
+/*  digitalWrite(parallel_prs, HIGH);
   delayMicroseconds(5);
   digitalWrite(parallel_prs, LOW);
+*/
   timer = micros();
   
   parallel_buff = 0x00;
@@ -79,11 +87,16 @@ void loop() {
   {
     parallel_buff |= digitalRead(parallel_pins[i]) << i;
   }
+  d = micros() - timer;
+  Serial.println(d);
+  while(micros() - timer < 5){;} // wait
+
+
   
-  while(micros() - timer < 5){delayMicroseconds(1);} // wait
-  
-  data_log.write(parallel_buff); // write to file on SD
-  
+  //data_log.write(parallel_buff); // write to file on SD
+  if(parallel_buff != 0x00 && parallel_buff != (byte)'\n') {
+    Serial.print((char)parallel_buff);
+  }
   //int t0 = micros();
   //data_log.flush();
   //int tf = micros();
@@ -101,8 +114,5 @@ void loop() {
     while(1) ; // HOLD 
   }
   
-  while((micros() - timer) < 105) // wait
-  {
-    delayMicroseconds(1); 
-  }
+  while((micros() - timer) < 105) ; // wait
 }
