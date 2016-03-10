@@ -81,14 +81,14 @@ int main(int argc, char* argv[])
     /*
     ** Write Loop
     */
-wiringPiSetupSys();
-delayMicroseconds(300);
+//wiringPiSetupSys();
+//delayMicroseconds(300);
 unsigned int t0, tf, t;
 //int i;
-    for(i=1; i<=10; i++)
+    for(i=1; ; i++)
     {
 	t0 = micros();
-        if( /*(digitalRead(GPIO_PIN_PRS) == HIGH)  &&*/ (debounce == 0) )
+        if( (digitalRead(GPIO_PIN_PRS) == HIGH)  && (debounce == 0) )
         {
            t = parallel_write(data);
 		    //printf("%c", (char)data);
