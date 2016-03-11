@@ -39,6 +39,11 @@ static CFE_EVS_BinFilter_t  VC0706_EventFilters[] =
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * *  * * * * **/
 void VC0706_AppMain( void )
 {
+	/*
+	** Test
+	*/
+	// Camera cam;
+	 
     int32  status;
     uint32 RunStatus = CFE_ES_APP_RUN;
 
