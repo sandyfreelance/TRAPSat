@@ -1,0 +1,1 @@
+prs_data_relay/ is a VHDL project targetting the Xilinx Nexsys3 Spartan-6 FPGA.

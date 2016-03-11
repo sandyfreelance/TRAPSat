@@ -1,0 +1,5 @@
+# Inputs
+NET "clock" LOC = V10;
+
+# Outputs
+NET "prs" LOC = K2;

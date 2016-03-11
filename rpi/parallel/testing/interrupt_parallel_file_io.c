@@ -21,6 +21,7 @@ void parallel_write(void);
 unsigned char data;
 unsigned long int debounce = 0;
 
+int gpio_pin = 0;
 
 int t0, tf;
 
@@ -35,6 +36,7 @@ int GPIO_PIN_PRS = 40;
 
 int src_data_file;
 int ret = 1; // needs to be initialized to not 0
+int i = 0;
 
 
 int main(int argc, char* argv[])
@@ -46,7 +48,6 @@ int main(int argc, char* argv[])
     int src_state = 0;
     int send_state = 0;
     data = START_MAIN_FLAG;
-    int i = 0;
     int file_length = 0;
     unsigned char file_length_msb, file_length_lsb;
     unsigned char src_data_buf = 0x00;
@@ -98,7 +99,8 @@ int main(int argc, char* argv[])
     /*
     ** Set interrupt on PRS pin for parallel_write() -------------------------- New addition in functionality
     */
-    wiringPiISR( GPIO_PIN_PRS, INT_EDGE_RISING, &parallel_write );
+    //wiringPiISR( GPIO_PIN_PRS, INT_EDGE_RISING, &parallel_write );
+    wiringPiISR( GPIO_PIN_PRS, INT_EDGE_FALLING, &parallel_write );
 
 
     for(;;) { // wait for IO to complete
@@ -108,18 +110,19 @@ int main(int argc, char* argv[])
     }
 
     close(src_data_file);
-
+	printf("Done.\n");
     return 0;
 }
 
 void parallel_write(void) // now uses global data variable
 {
-    t0 = micros();
+    //t0 = tf;
+    //tf = micros();
+	
+    delayMicroseconds(5); 
 
-    delayMicroseconds(5);
-
-    int gpio_pin = 0;
-    int i = 0;
+    gpio_pin = 0;
+    i = 0;
     for(i=0; i < 8; i++)
     {
         gpio_pin = GPIO_PIN_BUS[i];
@@ -137,8 +140,9 @@ void parallel_write(void) // now uses global data variable
     // get new data
     ret = read(src_data_file, &data, 1);
 
-    tf = micros() - t0;
-    if(tf < 100) {
-        delayMicroseconds(100-tf);
-    }
+    //printf("parallel_write() called %d micros after previous call.\n",tf-t0 );
+    //tf = micros() - t0;
+    //if(tf < 100) {
+    //    delayMicroseconds(100-tf);
+    //}
 }
