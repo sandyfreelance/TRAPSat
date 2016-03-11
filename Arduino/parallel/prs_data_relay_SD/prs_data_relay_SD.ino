@@ -68,22 +68,23 @@ void loop() {
   /*
    * PRS loop delay of 100.33 microseconds
    */
-  //Serial.println("Strobing...");
+  Serial.println("Strobing...");
   digitalWrite(parallel_prs, HIGH);
-  delayMicroseconds(5);
+  delayMicroseconds(50);
   digitalWrite(parallel_prs, LOW);
-  timer = micros();
   
+  timer = micros();
+  /*
   parallel_buff = 0x00;
   for(i = 0; i < 8; i++)
   {
     parallel_buff |= digitalRead(parallel_pins[i]) << i;
   }
-  
-  while(micros() - timer < 5){delayMicroseconds(1);} // wait
-  
+  */
+  while(micros() - timer < 5) {;} // wait
+  /*
   data_log.write(parallel_buff); // write to file on SD
-  
+  */
   //int t0 = micros();
   //data_log.flush();
   //int tf = micros();
@@ -92,8 +93,9 @@ void loop() {
   //Serial.print(tf-t0);
   //Serial.println(" micros");
   
-  if(micros() > 5000000) // 5 secs
+  if(micros() > 30000000) // 30 secs
   {
+    digitalWrite(parallel_prs, LOW);
     //Serial.println("Closing file...");
     data_log.flush();
     data_log.close();
@@ -101,8 +103,5 @@ void loop() {
     while(1) ; // HOLD 
   }
   
-  while((micros() - timer) < 105) // wait
-  {
-    delayMicroseconds(1); 
-  }
+  while((micros() - timer) < 105) {;} // wait
 }
