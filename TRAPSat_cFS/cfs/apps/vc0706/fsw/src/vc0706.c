@@ -2,7 +2,7 @@
 ** File: vc0706.c
 **
 ** Purpose:
-**   This file contains the source code for the Sample App.
+**   This file contains the source code for the VC0706 App.
 **
 *******************************************************************************/
 
@@ -21,7 +21,7 @@
 ** global data
 */
 
-sample_hk_tlm_t    VC0706_HkTelemetryPkt;
+vc0706_hk_tlm_t    VC0706_HkTelemetryPkt;
 CFE_SB_PipeId_t    VC0706_CommandPipe;
 CFE_SB_MsgPtr_t    VC0706MsgPtr;
 
@@ -141,7 +141,7 @@ void VC0706_ProcessCommandPacket(void)
             break;
 
         default:
-            VC0706_HkTelemetryPkt.sample_command_error_count++;
+            VC0706_HkTelemetryPkt.vc0706_command_error_count++;
             CFE_EVS_SendEvent(VC0706_COMMAND_ERR_EID,CFE_EVS_ERROR,
 			"VC0706: invalid command packet,MID = 0x%x", MsgId);
             break;
@@ -167,7 +167,7 @@ void VC0706_ProcessGroundCommand(void)
     switch (CommandCode)
     {
         case VC0706_NOOP_CC:
-            VC0706_HkTelemetryPkt.sample_command_count++;
+            VC0706_HkTelemetryPkt.vc0706_command_count++;
             CFE_EVS_SendEvent(VC0706_COMMANDNOP_INF_EID,CFE_EVS_INFORMATION,
 			"VC0706: NOOP command");
             break;
@@ -212,8 +212,8 @@ void VC0706_ReportHousekeeping(void)
 void VC0706_ResetCounters(void)
 {
     /* Status of commands processed by the VC0706 App */
-    VC0706_HkTelemetryPkt.sample_command_count       = 0;
-    VC0706_HkTelemetryPkt.sample_command_error_count = 0;
+    VC0706_HkTelemetryPkt.vc0706_command_count       = 0;
+    VC0706_HkTelemetryPkt.vc0706_command_error_count = 0;
 
     CFE_EVS_SendEvent(VC0706_COMMANDRST_INF_EID, CFE_EVS_INFORMATION,
 		"VC0706: RESET command");
@@ -244,7 +244,7 @@ boolean VC0706_VerifyCmdLength(CFE_SB_MsgPtr_t msg, uint16 ExpectedLength)
            "Invalid msg length: ID = 0x%X,  CC = %d, Len = %d, Expected = %d",
               MessageID, CommandCode, ActualLength, ExpectedLength);
         result = FALSE;
-        VC0706_HkTelemetryPkt.sample_command_error_count++;
+        VC0706_HkTelemetryPkt.vc0706_command_error_count++;
     }
 
     return(result);

@@ -19,7 +19,7 @@
 #include "cfe_sb.h"
 #include "cfe_es.h"
 
-#include "vc0706_core.h"
+/*#include "vc0706_core.h"*/
 
 #include <string.h>
 #include <errno.h>
