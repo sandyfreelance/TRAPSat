@@ -3,7 +3,7 @@
 **   $Id: vc0706_version.h  $
 **
 ** Purpose: 
-**  The Sample Application header file containing version number
+**  The VC0706 Application header file containing version number
 **
 ** Notes:
 **
