@@ -18,7 +18,8 @@ int main (int argc, char* argv[])
 
 	if(getVersion(&cam) != NULL)
 	{
-	  for (int i=0; i<j; i++) 
+	  int i;
+	  for (i=0; i<j; i++) 
 	  {
 		char *path;
 		sprintf(path, "images/%d.jpg", i);

@@ -134,19 +134,6 @@ bool checkReply(Camera *cam, int cmd, int size) {
         return true;
 }
 
-void reset(Camera *cam) {
-    // Camera Reset method
-    serialPutchar(cam->fd, (char)0x56);
-    serialPutchar(cam->fd, (char)cam->serialNum);
-    serialPutchar(cam->fd, (char)RESET);
-    serialPutchar(cam->fd, (char)0x00);
-
-    if (checkReply(RESET, 5) != true)
-        fprintf(stderr, "Check Reply Status: %s\n", strerror(errno));
-
-    clearBuffer(*cam);
-}
-
 void clearBuffer(Camera *cam) {
     int t_count = 0;
     int length = 0;
@@ -165,6 +152,19 @@ void clearBuffer(Camera *cam) {
         serialGetchar(cam->fd);
         length++;
     }
+}
+
+void reset(Camera *cam) {
+    // Camera Reset method
+    serialPutchar(cam->fd, (char)0x56);
+    serialPutchar(cam->fd, (char)cam->serialNum);
+    serialPutchar(cam->fd, (char)RESET);
+    serialPutchar(cam->fd, (char)0x00);
+
+    if (checkReply(cam, RESET, 5) != true)
+        fprintf(stderr, "Check Reply Status: %s\n", strerror(errno));
+
+    clearBuffer(cam);
 }
 
 void resumeVideo(Camera *cam)
@@ -196,7 +196,7 @@ char * getVersion(Camera *cam)
     int avail = 0;
     int timeout = 1 * TO_SCALE;
     
-    while ((timeout != counter) && (bufferLen != CAMERABUFFSIZ))
+    while ((timeout != counter) && (cam->bufferLen != CAMERABUFFSIZ))
     {
         avail = serialDataAvail(cam->fd);
         if (avail <= 0)
@@ -213,7 +213,7 @@ char * getVersion(Camera *cam)
     
     cam->camerabuff[cam->bufferLen] = 0;
     
-    return camerabuff;
+    return cam->camerabuff;
 }
 
 void setMotionDetect(Camera *cam, int flag)
@@ -256,7 +256,7 @@ char * takePicture(Camera *cam, const char * file_path)
     if (checkReply(cam, FBUF_CTRL, 5) == false)
     {
         printf("Frame checkReply Failed\n");
-        return empty;
+        return cam->empty;
     }
 
     
@@ -269,7 +269,7 @@ char * takePicture(Camera *cam, const char * file_path)
     if (checkReply(cam, GET_FBUF_LEN, 5) == false)
     {
         printf("FBUF_LEN REPLY NOT VALID!!!\n");
-        return empty;
+        return cam->empty;
     }
     
     while(serialDataAvail(cam->fd) <= 0){}
@@ -321,7 +321,7 @@ char * takePicture(Camera *cam, const char * file_path)
             
         if (checkReply(cam, READ_FBUF, 5) == false)
         {
-            return empty;
+            return cam->empty;
         }
         
         int counter = 0;
@@ -351,7 +351,7 @@ char * takePicture(Camera *cam, const char * file_path)
         
         if (checkReply(cam, READ_FBUF, 5) == false)
         {
-            printf("ERROR READING END OF CHUNK| start: %u | length: %u\n", frameptr, len);
+            printf("ERROR READING END OF CHUNK| start: %u | length: %u\n", cam->frameptr, len);
         }
     }
        
@@ -366,7 +366,8 @@ char * takePicture(Camera *cam, const char * file_path)
         printf("IMAGE COULD NOT BE OPENED/MADE!\n");
     }
     
-    sprintf(imageName, "%s", file_path);
+    if(sizeof(file_path) < sizeof(cam->imageName))
+    	sprintf(cam->imageName, "%s", file_path);
     
     resumeVideo(cam);
 
@@ -377,7 +378,7 @@ char * takePicture(Camera *cam, const char * file_path)
     //setMotionDetect(0);
 
     
-    return imageName;
+    return cam->imageName;
 }
 
 // End Brian's Methods
