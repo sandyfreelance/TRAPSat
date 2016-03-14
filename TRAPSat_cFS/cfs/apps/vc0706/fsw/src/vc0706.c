@@ -59,7 +59,7 @@ void VC0706_AppMain( void )
         CFE_ES_PerfLogExit(VC0706_PERF_ID);
 
         /* Pend on receipt of command packet -- timeout set to 500 millisecs */
-        status = CFE_SB_RcvMsg(&VC0706msgPtr, VC0706_CommandPipe, 500);
+        status = CFE_SB_RcvMsg(&VC0706MsgPtr, VC0706_CommandPipe, 500); // compilation complains here -- VC0706msgPtr -> VC0706MsgPtr
         
         CFE_ES_PerfLogEntry(VC0706_PERF_ID);
 
