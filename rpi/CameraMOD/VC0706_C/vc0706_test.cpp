@@ -29,10 +29,12 @@ int main (int argc, char* argv[])
 		//char * path;
 		//sprintf(path, "images/%d.jpg", i);
 		//cout << "file: " << path << endl;
-		std::string path = "images/"+std::to_string(i)+".jpg";
+		//std::string path; // = "images/"+std::to_string(i)+".jpg";
+		char *path;
+		sprintf(path, "images/%d.jpg", i);
 		//begin = time(0);
 		//cam.reset();
-		cam.takePicture(path.c_str()); // stores to ./images/i.jpeg
+		cam.takePicture(path); // stores to ./images/i.jpeg
 	  	//cam.clearBuffer();
 		//end = time(0);
 		//cout << "it took about " << (double)end-begin << " seconds to take and store this picture." << endl;

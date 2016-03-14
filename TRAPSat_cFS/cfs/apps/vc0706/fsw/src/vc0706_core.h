@@ -8,14 +8,15 @@
 //#include <node_object_wrap.h>
 
 // C standard library
-#include <cstdlib>
-#include <ctime>
+//#include <cstdlib> /* The cFS compilation doesn't like this */
+
+#include <time.h> // #include <ctime>
 #include <errno.h>
 
 #include <stdint.h>
 #include <stdlib.h>
-#include <cstring>
-#include <iostream>
+//#include <string.h> // #include <cstring>
+//#include <iostream>
 
 // Brian's DEPS
 #include <stdio.h>
@@ -25,7 +26,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-using namespace std;
+//using namespace std; // switching to fprint
 //using namespace v8;
 //using namespace node;
 
@@ -123,7 +124,7 @@ Camera::Camera() {
 
 
     if ((fd = serialOpen("/dev/ttyAMA0", BAUD)) < 0)
-        cout <<  "SPI Setup Failed: " <<  strerror(errno) << endl;
+        fprintf(stderr, "SPI Setup Failed: %s\n", strerror(errno));
 
     if (wiringPiSetup() == -1)
         exit(1);
@@ -143,7 +144,7 @@ void Camera::reset() {
     serialPutchar(fd, (char)0x00);
 
     if (checkReply(RESET, 5) != true)
-        cout <<  "Check Reply Status: " <<  strerror(errno) << endl;
+        fprintf(stderr, "Check Reply Status: %s\n", strerror(errno));
 
     clearBuffer();
 
