@@ -4,19 +4,14 @@
  * Edited By Zach Richard for use on TRAPSat aboard the RockSat-X 2016 Mission
  */
 
-//#include <node.h> // removed Node code -- Zach
-//#include <node_object_wrap.h>
 
-// C standard library
-//#include <cstdlib> /* The cFS compilation doesn't like this */
 
 #include <time.h> // #include <ctime>
 #include <errno.h>
+#include <stdbool.h>
 
 #include <stdint.h>
 #include <stdlib.h>
-//#include <string.h> // #include <cstring>
-//#include <iostream>
 
 // Brian's DEPS
 #include <stdio.h>
@@ -26,23 +21,11 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-//using namespace std; // switching to fprint
-//using namespace v8;
-//using namespace node;
-
-
-//extern "C"  {
-//#include "deps/wiringSerial.h"
-//#include "deps/wiringPi.h"
-//}
-
 #include <wiringSerial.h>
 #include <wiringPi.h>
 
-
 // Brian's Defines
 #define BAUD 38400
-//#define BAUD 115200
 
 #define RESET 0x26
 #define GEN_VERSION 0x11
@@ -82,28 +65,15 @@
 
 #define TO_SCALE 1
 #define TO_U 200000
-//#define TO_U 1000000
 
 
 
-class Camera {
 
-public:
-    Camera();
-    ~Camera();
-    void reset();
-    void setMotionDetect(int flag);
-    bool checkReply(int cmd, int size);
-    void clearBuffer();
-    bool motionDetected();
-    char * getVersion();
-    char * takePicture(const char * file_path);
+
+typedef struct Camera {
     int motion;
     int ready;
     int fd;
-
-private:
-    void resumeVideo();
     uint8_t offscreen[8]; // font width;
 
     int frameptr;
@@ -113,53 +83,44 @@ private:
     char serialHeader[5];
     char imageName[16];
     char * empty;
-};
-
-Camera::Camera() {
-    frameptr = 0;
-    bufferLen = 0;
-    serialNum = 0;
-    motion = 1;
-    ready = 1;
+} Camera;
 
 
-    if ((fd = serialOpen("/dev/ttyAMA0", BAUD)) < 0)
+
+
+
+void init(Camera *cam) {
+    cam->frameptr = 0;
+    cam->bufferLen = 0;
+    cam->serialNum = 0;
+    cam->motion = 1;
+    cam->ready = 1;
+
+    if ((cam->fd = serialOpen("/dev/ttyAMA0", BAUD)) < 0)
+    {
         fprintf(stderr, "SPI Setup Failed: %s\n", strerror(errno));
+    	printf("SPI Setup failed.\n");
+    }
 
     if (wiringPiSetup() == -1)
-        exit(1);
+    {
+        printf("wiringPiSetup(0 failed.\n");
+	exit(1);
+    }
 
-
-    ready = 1;
-
+    cam->ready = 1;
 }
 
-Camera::~Camera() {}
-
-void Camera::reset() {
-    // Camera Reset method
-    serialPutchar(fd, (char)0x56);
-    serialPutchar(fd, (char)serialNum);
-    serialPutchar(fd, (char)RESET);
-    serialPutchar(fd, (char)0x00);
-
-    if (checkReply(RESET, 5) != true)
-        fprintf(stderr, "Check Reply Status: %s\n", strerror(errno));
-
-    clearBuffer();
-
-}
-
-bool Camera::checkReply(int cmd, int size) {
+bool checkReply(Camera *cam, int cmd, int size) {
     int reply[size];
     int t_count = 0;
     int length = 0;
     int avail = 0;
     int timeout = 3 * TO_SCALE; // test 3 was 5
-    
+
     while ((timeout != t_count) && (length != CAMERABUFFSIZ) && length < size)
     {
-        avail = serialDataAvail(fd);
+        avail = serialDataAvail(cam->fd);
         if (avail <= 0)
         {
             usleep(TO_U);
@@ -168,10 +129,10 @@ bool Camera::checkReply(int cmd, int size) {
         }
         t_count = 0;
         // there's a byte!
-        int newChar = serialGetchar(fd);
+        int newChar = serialGetchar(cam->fd);
         reply[length++] = (char)newChar;
     }
-    
+
     //Check the reply
     if (reply[0] != 0x76 && reply[1] != 0x00 && reply[2] != cmd)
         return false;
@@ -179,14 +140,14 @@ bool Camera::checkReply(int cmd, int size) {
         return true;
 }
 
-void Camera::clearBuffer() {
+void clearBuffer(Camera *cam) {
     int t_count = 0;
     int length = 0;
     int timeout = 2 * TO_SCALE;
 
     while ((timeout != t_count) && (length != CAMERABUFFSIZ))
     {
-        int avail = serialDataAvail(fd);
+        int avail = serialDataAvail(cam->fd);
         if (avail <= 0)
         {
             t_count++;
@@ -194,43 +155,57 @@ void Camera::clearBuffer() {
         }
         t_count = 0;
         // there's a byte!
-        serialGetchar(fd);
+        serialGetchar(cam->fd);
         length++;
     }
 }
 
-void Camera::resumeVideo()
+void reset(Camera *cam) {
+    // Camera Reset method
+    serialPutchar(cam->fd, (char)0x56);
+    serialPutchar(cam->fd, (char)cam->serialNum);
+    serialPutchar(cam->fd, (char)RESET);
+    serialPutchar(cam->fd, (char)0x00);
+
+    if (checkReply(cam, RESET, 5) != true)
+        fprintf(stderr, "Check Reply Status: %s\n", strerror(errno));
+
+    clearBuffer(cam);
+}
+
+void resumeVideo(Camera *cam)
 {
-    serialPutchar(fd, (char)0x56);
-    serialPutchar(fd, (char)serialNum);
-    serialPutchar(fd, (char)FBUF_CTRL);
-    serialPutchar(fd, (char)0x01);
-    serialPutchar(fd, (char)RESUMEFRAME);
-    
-    if (checkReply(FBUF_CTRL, 5) == false)
+    serialPutchar(cam->fd, (char)0x56);
+    serialPutchar(cam->fd, (char)cam->serialNum);
+    serialPutchar(cam->fd, (char)FBUF_CTRL);
+    serialPutchar(cam->fd, (char)0x01);
+    serialPutchar(cam->fd, (char)RESUMEFRAME);
+
+    if (checkReply(cam, FBUF_CTRL, 5) == false)
         printf("Camera did not resume\n");
 }
 
-char * Camera::getVersion()
+char * getVersion(Camera *cam)
 {
-    serialPutchar(fd, (char)0x56);
-    serialPutchar(fd, (char)serialNum);
-    serialPutchar(fd, (char)GEN_VERSION);
-    serialPutchar(fd, (char)0x00);
-    
-    if (checkReply(GEN_VERSION, 5) == false)
+	printf("getVersion() called.\n");
+    serialPutchar(cam->fd, (char)0x56);
+    serialPutchar(cam->fd, (char)cam->serialNum);
+    serialPutchar(cam->fd, (char)GEN_VERSION);
+    serialPutchar(cam->fd, (char)0x00);
+
+    if (checkReply(cam, GEN_VERSION, 5) == false)
     {
         printf("CAMERA NOT FOUND!!!\n");
     }
-    
+
     int counter = 0;
-    bufferLen = 0;
+    cam->bufferLen = 0;
     int avail = 0;
     int timeout = 1 * TO_SCALE;
-    
-    while ((timeout != counter) && (bufferLen != CAMERABUFFSIZ))
+
+    while ((timeout != counter) && (cam->bufferLen != CAMERABUFFSIZ))
     {
-        avail = serialDataAvail(fd);
+        avail = serialDataAvail(cam->fd);
         if (avail <= 0)
         {
             usleep(TO_U);
@@ -239,92 +214,93 @@ char * Camera::getVersion()
         }
         counter = 0;
         // there's a byte!
-        int newChar = serialGetchar(fd);
-        camerabuff[bufferLen++] = (char)newChar;
+        int newChar = serialGetchar(cam->fd);
+        cam->camerabuff[cam->bufferLen++] = (char)newChar;
     }
-    
-    camerabuff[bufferLen] = 0;
-    
-    return camerabuff;
+
+    cam->camerabuff[cam->bufferLen] = 0;
+	printf("getVersion() returning.\n");
+    return cam->camerabuff;
 }
 
-void Camera::setMotionDetect(int flag)
+void setMotionDetect(Camera *cam, int flag)
 {
-    serialPutchar(fd, (char)0x56);
-    serialPutchar(fd, (char)0x00);
-    serialPutchar(fd, (char)0x42);
-    serialPutchar(fd, (char)0x04);
-    serialPutchar(fd, (char)0x01);
-    serialPutchar(fd, (char)0x01);
-    serialPutchar(fd, (char)0x00);
-    serialPutchar(fd, (char)0x00);
+    serialPutchar(cam->fd, (char)0x56);
+    serialPutchar(cam->fd, (char)0x00);
+    serialPutchar(cam->fd, (char)0x42);
+    serialPutchar(cam->fd, (char)0x04);
+    serialPutchar(cam->fd, (char)0x01);
+    serialPutchar(cam->fd, (char)0x01);
+    serialPutchar(cam->fd, (char)0x00);
+    serialPutchar(cam->fd, (char)0x00);
     
-    serialPutchar(fd, (char)0x56);
-    serialPutchar(fd, (char)serialNum);
-    serialPutchar(fd, (char)COMM_MOTION_CTRL);
-    serialPutchar(fd, (char)0x01);
-    serialPutchar(fd, (char)flag);
+    serialPutchar(cam->fd, (char)0x56);
+    serialPutchar(cam->fd, (char)cam->serialNum);
+    serialPutchar(cam->fd, (char)COMM_MOTION_CTRL);
+    serialPutchar(cam->fd, (char)0x01);
+    serialPutchar(cam->fd, (char)flag);
 
-    clearBuffer();
-
+    clearBuffer(cam);
 }
 
 
-char * Camera::takePicture(const char * file_path)
+char * takePicture(Camera *cam, const char * file_path)
 {
-    frameptr = 0;
+    cam->frameptr = 0;
 
     // Force Stop motion detect
     //setMotionDetect(0);
 
-    //Clear Buffer
-    clearBuffer();
+	printf("takePicture() called.\n");
 
-    serialPutchar(fd, (char)0x56);
-    serialPutchar(fd, (char)serialNum);
-    serialPutchar(fd, (char)FBUF_CTRL);
-    serialPutchar(fd, (char)0x01);
-    serialPutchar(fd, (char)STOPCURRENTFRAME);
-    
-    if (checkReply(FBUF_CTRL, 5) == false)
+    //Clear Buffer
+    clearBuffer(cam);
+
+    serialPutchar(cam->fd, (char)0x56);
+    serialPutchar(cam->fd, (char)cam->serialNum);
+    serialPutchar(cam->fd, (char)FBUF_CTRL);
+    serialPutchar(cam->fd, (char)0x01);
+    serialPutchar(cam->fd, (char)STOPCURRENTFRAME);
+
+    if (checkReply(cam, FBUF_CTRL, 5) == false)
     {
         printf("Frame checkReply Failed\n");
-        return empty;
+        return cam->empty;
     }
 
-    
-    serialPutchar(fd, (char)0x56);
-    serialPutchar(fd, (char)serialNum);
-    serialPutchar(fd, (char)GET_FBUF_LEN);
-    serialPutchar(fd, (char)0x01);
-    serialPutchar(fd, (char)0x00);
-    
-    if (checkReply(GET_FBUF_LEN, 5) == false)
+
+    serialPutchar(cam->fd, (char)0x56);
+    serialPutchar(cam->fd, (char)cam->serialNum);
+    serialPutchar(cam->fd, (char)GET_FBUF_LEN);
+    serialPutchar(cam->fd, (char)0x01);
+    serialPutchar(cam->fd, (char)0x00);
+
+    if (checkReply(cam, GET_FBUF_LEN, 5) == false)
     {
         printf("FBUF_LEN REPLY NOT VALID!!!\n");
-        return empty;
+        return cam->empty;
     }
-    
-    while(serialDataAvail(fd) <= 0){}
 
-    printf("Serial Data Avail %u \n", serialDataAvail(fd));
-    
+    while(serialDataAvail(cam->fd) <= 0){}
+
+    printf("Serial Data Avail %u \n", serialDataAvail(cam->fd));
+
     int len;
-    len = serialGetchar(fd);
+    len = serialGetchar(cam->fd);
     len <<= 8;
-    len |= serialGetchar(fd);
+    len |= serialGetchar(cam->fd);
     len <<= 8;
-    len |= serialGetchar(fd);
+    len |= serialGetchar(cam->fd);
     len <<= 8;
-    len |= serialGetchar(fd);
+    len |= serialGetchar(cam->fd);
 
     printf("Length %u \n", len);
 
     if(len > 20000){
         printf("To Large... \n");
-        resumeVideo();
-        clearBuffer();
-        return Camera::takePicture(file_path);
+        resumeVideo(cam);
+        clearBuffer(cam);
+        return takePicture(cam, file_path);
     }
     
     char image[len];
@@ -335,36 +311,36 @@ char * Camera::takePicture(const char * file_path)
     {
         int readBytes = len;
         
-        serialPutchar(fd, (char)0x56);
-        serialPutchar(fd, (char)serialNum);
-        serialPutchar(fd, (char)READ_FBUF);
-        serialPutchar(fd, (char)0x0C);
-        serialPutchar(fd, (char)0x0);
-        serialPutchar(fd, (char)0x0A);
-        serialPutchar(fd, (char)(frameptr >> 24 & 0xff));
-        serialPutchar(fd, (char)(frameptr >> 16 & 0xff));
-        serialPutchar(fd, (char)(frameptr >> 8 & 0xff));
-        serialPutchar(fd, (char)(frameptr & 0xFF));
-        serialPutchar(fd, (char)(readBytes >> 24 & 0xff));
-        serialPutchar(fd, (char)(readBytes >> 16 & 0xff));
-        serialPutchar(fd, (char)(readBytes >> 8 & 0xff));
-        serialPutchar(fd, (char)(readBytes & 0xFF));
-        serialPutchar(fd, (char)(CAMERADELAY >> 8));
-        serialPutchar(fd, (char)(CAMERADELAY & 0xFF));
+        serialPutchar(cam->fd, (char)0x56);
+        serialPutchar(cam->fd, (char)cam->serialNum);
+        serialPutchar(cam->fd, (char)READ_FBUF);
+        serialPutchar(cam->fd, (char)0x0C);
+        serialPutchar(cam->fd, (char)0x0);
+        serialPutchar(cam->fd, (char)0x0A);
+        serialPutchar(cam->fd, (char)(cam->frameptr >> 24 & 0xff));
+        serialPutchar(cam->fd, (char)(cam->frameptr >> 16 & 0xff));
+        serialPutchar(cam->fd, (char)(cam->frameptr >> 8 & 0xff));
+        serialPutchar(cam->fd, (char)(cam->frameptr & 0xFF));
+        serialPutchar(cam->fd, (char)(readBytes >> 24 & 0xff));
+        serialPutchar(cam->fd, (char)(readBytes >> 16 & 0xff));
+        serialPutchar(cam->fd, (char)(readBytes >> 8 & 0xff));
+        serialPutchar(cam->fd, (char)(readBytes & 0xFF));
+        serialPutchar(cam->fd, (char)(CAMERADELAY >> 8));
+        serialPutchar(cam->fd, (char)(CAMERADELAY & 0xFF));
             
-        if (checkReply(READ_FBUF, 5) == false)
+        if (checkReply(cam, READ_FBUF, 5) == false)
         {
-            return empty;
+            return cam->empty;
         }
         
         int counter = 0;
-        bufferLen = 0;
+        cam->bufferLen = 0;
         int avail = 0;
         int timeout = 20 * TO_SCALE;
         
-        while ((timeout != counter) && bufferLen < readBytes)
+        while ((timeout != counter) && cam->bufferLen < readBytes)
         {
-            avail = serialDataAvail(fd);
+            avail = serialDataAvail(cam->fd);
 
             if (avail <= 0)
             {
@@ -373,26 +349,21 @@ char * Camera::takePicture(const char * file_path)
                 continue;
             }
             counter = 0;
-            int newChar = serialGetchar(fd);
+            int newChar = serialGetchar(cam->fd);
             image[imgIndex++] = (char)newChar;
             
-            bufferLen++;
+            cam->bufferLen++;
         }
         
-        frameptr += readBytes;
+        cam->frameptr += readBytes;
         len -= readBytes;
         
-        if (checkReply(READ_FBUF, 5) == false)
+        if (checkReply(cam, READ_FBUF, 5) == false)
         {
-            printf("ERROR READING END OF CHUNK| start: %u | length: %u\n", frameptr, len);
+            printf("ERROR READING END OF CHUNK| start: %u | length: %u\n", cam->frameptr, len);
         }
     }
-
-    
-    
-    //char name[23];
-    //int t = (int)time(NULL);
-    //sprintf(name, "images/%u.jpg", t);
+       
     FILE *jpg = fopen(file_path, "w");
     if (jpg != NULL)
     {
@@ -404,18 +375,19 @@ char * Camera::takePicture(const char * file_path)
         printf("IMAGE COULD NOT BE OPENED/MADE!\n");
     }
     
-    sprintf(imageName, "%s", file_path);
+//    if(sizeof(file_path) < sizeof(cam->imageName))
+    	sprintf(cam->imageName, "%s", file_path);
     
-    resumeVideo();
+    resumeVideo(cam);
 
     //Clear Buffer
-    clearBuffer();
+    clearBuffer(cam);
 
     // Force Stop motion detect
     //setMotionDetect(0);
 
     
-    return imageName;
+    return cam->imageName;
 }
 
 // End Brian's Methods

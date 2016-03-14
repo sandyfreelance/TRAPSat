@@ -8,23 +8,19 @@
 int main (int argc, char* argv[])
 {
 	Camera cam;
+	//printf("Camera declared.\n");
+
 	init(&cam);
+	//printf("Cam initialized.\n");
 
-	clock_t begin, end;
-	int j=1;
-
-	if(argv[1][0]-'0' > 0)
-		j=argv[1][0]-'0';
-
-	if(getVersion(&cam) != NULL)
+	if(getVersion(&cam) != 0)
 	{
-	  int i;
-	  for (i=0; i<j; i++) 
-	  {
-		char *path;
-		sprintf(path, "images/%d.jpg", i);
-		takePicture(&cam, path); // stores to ./images/i.jpeg
-	  }
+		takePicture(&cam, "images/test.jpg");
+		printf("picture taken.\n");
+	}
+	else
+	{
+		printf("getVersion(&cam) == NULL");
 	}
 
 	return 0;

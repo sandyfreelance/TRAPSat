@@ -97,10 +97,16 @@ void init(Camera *cam) {
     cam->ready = 1;
 
     if ((cam->fd = serialOpen("/dev/ttyAMA0", BAUD)) < 0)
+    {
         fprintf(stderr, "SPI Setup Failed: %s\n", strerror(errno));
+    	printf("SPI Setup failed.\n");
+    }
 
     if (wiringPiSetup() == -1)
-        exit(1);
+    {
+        printf("wiringPiSetup(0 failed.\n");
+	exit(1);
+    }
 
     cam->ready = 1;
 }
@@ -111,7 +117,7 @@ bool checkReply(Camera *cam, int cmd, int size) {
     int length = 0;
     int avail = 0;
     int timeout = 3 * TO_SCALE; // test 3 was 5
-    
+
     while ((timeout != t_count) && (length != CAMERABUFFSIZ) && length < size)
     {
         avail = serialDataAvail(cam->fd);
@@ -126,7 +132,7 @@ bool checkReply(Camera *cam, int cmd, int size) {
         int newChar = serialGetchar(cam->fd);
         reply[length++] = (char)newChar;
     }
-    
+
     //Check the reply
     if (reply[0] != 0x76 && reply[1] != 0x00 && reply[2] != cmd)
         return false;
@@ -174,28 +180,29 @@ void resumeVideo(Camera *cam)
     serialPutchar(cam->fd, (char)FBUF_CTRL);
     serialPutchar(cam->fd, (char)0x01);
     serialPutchar(cam->fd, (char)RESUMEFRAME);
-    
+
     if (checkReply(cam, FBUF_CTRL, 5) == false)
         printf("Camera did not resume\n");
 }
 
 char * getVersion(Camera *cam)
 {
+	printf("getVersion() called.\n");
     serialPutchar(cam->fd, (char)0x56);
     serialPutchar(cam->fd, (char)cam->serialNum);
     serialPutchar(cam->fd, (char)GEN_VERSION);
     serialPutchar(cam->fd, (char)0x00);
-    
+
     if (checkReply(cam, GEN_VERSION, 5) == false)
     {
         printf("CAMERA NOT FOUND!!!\n");
     }
-    
+
     int counter = 0;
     cam->bufferLen = 0;
     int avail = 0;
     int timeout = 1 * TO_SCALE;
-    
+
     while ((timeout != counter) && (cam->bufferLen != CAMERABUFFSIZ))
     {
         avail = serialDataAvail(cam->fd);
@@ -210,9 +217,9 @@ char * getVersion(Camera *cam)
         int newChar = serialGetchar(cam->fd);
         cam->camerabuff[cam->bufferLen++] = (char)newChar;
     }
-    
+
     cam->camerabuff[cam->bufferLen] = 0;
-    
+	printf("getVersion() returning.\n");
     return cam->camerabuff;
 }
 
@@ -244,6 +251,8 @@ char * takePicture(Camera *cam, const char * file_path)
     // Force Stop motion detect
     //setMotionDetect(0);
 
+	printf("takePicture() called.\n");
+
     //Clear Buffer
     clearBuffer(cam);
 
@@ -252,30 +261,30 @@ char * takePicture(Camera *cam, const char * file_path)
     serialPutchar(cam->fd, (char)FBUF_CTRL);
     serialPutchar(cam->fd, (char)0x01);
     serialPutchar(cam->fd, (char)STOPCURRENTFRAME);
-    
+
     if (checkReply(cam, FBUF_CTRL, 5) == false)
     {
         printf("Frame checkReply Failed\n");
         return cam->empty;
     }
 
-    
+
     serialPutchar(cam->fd, (char)0x56);
     serialPutchar(cam->fd, (char)cam->serialNum);
     serialPutchar(cam->fd, (char)GET_FBUF_LEN);
     serialPutchar(cam->fd, (char)0x01);
     serialPutchar(cam->fd, (char)0x00);
-    
+
     if (checkReply(cam, GET_FBUF_LEN, 5) == false)
     {
         printf("FBUF_LEN REPLY NOT VALID!!!\n");
         return cam->empty;
     }
-    
+
     while(serialDataAvail(cam->fd) <= 0){}
 
     printf("Serial Data Avail %u \n", serialDataAvail(cam->fd));
-    
+
     int len;
     len = serialGetchar(cam->fd);
     len <<= 8;
@@ -366,7 +375,7 @@ char * takePicture(Camera *cam, const char * file_path)
         printf("IMAGE COULD NOT BE OPENED/MADE!\n");
     }
     
-    if(sizeof(file_path) < sizeof(cam->imageName))
+//    if(sizeof(file_path) < sizeof(cam->imageName))
     	sprintf(cam->imageName, "%s", file_path);
     
     resumeVideo(cam);
