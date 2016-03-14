@@ -68,6 +68,8 @@
 
 
 
+
+
 typedef struct Camera {
     int motion;
     int ready;
@@ -85,6 +87,8 @@ typedef struct Camera {
 
 
 
+
+
 void init(Camera *cam) {
     cam->frameptr = 0;
     cam->bufferLen = 0;
@@ -99,20 +103,6 @@ void init(Camera *cam) {
         exit(1);
 
     cam->ready = 1;
-}
-
-
-void reset(Camera *cam) {
-    // Camera Reset method
-    serialPutchar(cam->fd, (char)0x56);
-    serialPutchar(cam->fd, (char)cam->serialNum);
-    serialPutchar(cam->fd, (char)RESET);
-    serialPutchar(cam->fd, (char)0x00);
-
-    if (checkReply(RESET, 5) != true)
-        fprintf(stderr, "Check Reply Status: %s\n", strerror(errno));
-
-    clearBuffer(*cam);
 }
 
 bool checkReply(Camera *cam, int cmd, int size) {
@@ -142,6 +132,19 @@ bool checkReply(Camera *cam, int cmd, int size) {
         return false;
     else
         return true;
+}
+
+void reset(Camera *cam) {
+    // Camera Reset method
+    serialPutchar(cam->fd, (char)0x56);
+    serialPutchar(cam->fd, (char)cam->serialNum);
+    serialPutchar(cam->fd, (char)RESET);
+    serialPutchar(cam->fd, (char)0x00);
+
+    if (checkReply(RESET, 5) != true)
+        fprintf(stderr, "Check Reply Status: %s\n", strerror(errno));
+
+    clearBuffer(*cam);
 }
 
 void clearBuffer(Camera *cam) {
