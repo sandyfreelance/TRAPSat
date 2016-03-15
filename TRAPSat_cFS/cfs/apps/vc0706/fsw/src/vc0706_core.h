@@ -3,7 +3,7 @@
  *
  * Edited By Zach Richard for use on TRAPSat aboard the RockSat-X 2016 Mission
  */
-#ifdef _vc0706_core_h_
+#ifndef _vc0706_core_h_
 #define _vc0706_core_h
 
 #include <time.h>
@@ -72,7 +72,7 @@
 
 
 
-typedef struct {
+typedef struct Camera_t {
     int motion;
     int ready;
     int fd;
@@ -236,7 +236,7 @@ void setMotionDetect(Camera_t *cam, int flag)
     serialPutchar(cam->fd, (char)0x01);
     serialPutchar(cam->fd, (char)0x00);
     serialPutchar(cam->fd, (char)0x00);
-    
+
     serialPutchar(cam->fd, (char)0x56);
     serialPutchar(cam->fd, (char)cam->serialNum);
     serialPutchar(cam->fd, (char)COMM_MOTION_CTRL);
@@ -268,7 +268,7 @@ char * takePicture(Camera_t *cam, const char * file_path)
     if (checkReply(cam, FBUF_CTRL, 5) == false)
     {
         printf("Frame checkReply Failed\n");
-        return cam->&empty;
+        return &cam->empty;
     }
 
 
@@ -281,7 +281,7 @@ char * takePicture(Camera_t *cam, const char * file_path)
     if (checkReply(cam, GET_FBUF_LEN, 5) == false)
     {
         printf("FBUF_LEN REPLY NOT VALID!!!\n");
-        return cam->&empty;
+        return &cam->empty;
     }
 
     while(serialDataAvail(cam->fd) <= 0){}
@@ -333,7 +333,7 @@ char * takePicture(Camera_t *cam, const char * file_path)
             
         if (checkReply(cam, READ_FBUF, 5) == false)
         {
-            return cam->&empty;
+            return &cam->empty;
         }
         
         int counter = 0;

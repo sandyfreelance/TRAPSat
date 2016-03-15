@@ -33,8 +33,7 @@ char * getTime(void);
 /*
 ** External References -- maybe make the Camera struct external so we can use it in other files? idk bro
 */
- extern struct Camera cam;
-//Camera cam;
+ extern struct Camera_t cam;
 
 /*
 ** VC0706 take Pictures Loop
@@ -51,7 +50,7 @@ int VC0706_takePics(void)
     /*
     ** Main Camera structure
     **
-    ** WARNING: may need to be moved to a global later for CI and TO
+    ** WARNING: may need to  be moved to a global later for CI and TO
     */
     // Camera cam;
 
