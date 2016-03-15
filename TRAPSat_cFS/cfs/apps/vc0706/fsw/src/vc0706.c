@@ -25,6 +25,8 @@ vc0706_hk_tlm_t    VC0706_HkTelemetryPkt;
 CFE_SB_PipeId_t    VC0706_CommandPipe;
 CFE_SB_MsgPtr_t    VC0706MsgPtr;
 
+uint32             VC0706_ChildTaskID;
+
 static CFE_EVS_BinFilter_t  VC0706_EventFilters[] =
        {  /* Event ID    mask */
           {VC0706_STARTUP_INF_EID,       0x0000},
