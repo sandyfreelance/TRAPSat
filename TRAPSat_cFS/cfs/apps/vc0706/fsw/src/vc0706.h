@@ -37,7 +37,7 @@
 ** VC0706 Child Task Definitions
 */
 #define VC0706_CHILD_TASK_NAME        "CAMERA_CONTROL"
-#define VC0706_CHILD_TASK_STACK_SIZE  8192               
+#define VC0706_CHILD_TASK_STACK_SIZE  8192
 #define VC0706_CHILD_TASK_PRIORITY    200
 
 

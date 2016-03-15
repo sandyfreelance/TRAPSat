@@ -72,7 +72,7 @@
 
 
 
-typedef struct Camera {
+typedef struct {
     int motion;
     int ready;
     int fd;
@@ -83,14 +83,14 @@ typedef struct Camera {
     char camerabuff[CAMERABUFFSIZ+1];
     char serialHeader[5];
     char imageName[16];
-    char * empty;
-} Camera;
+    char empty;
+} Camera_t;
 
 
 
 
 
-int init(Camera *cam) {
+int init(Camera_t *cam) {
     cam->frameptr = 0;
     cam->bufferLen = 0;
     cam->serialNum = 0;
@@ -114,7 +114,7 @@ int init(Camera *cam) {
 	return 0;
 }
 
-bool checkReply(Camera *cam, int cmd, int size) {
+bool checkReply(Camera_t *cam, int cmd, int size) {
     int reply[size];
     int t_count = 0;
     int length = 0;
@@ -143,7 +143,7 @@ bool checkReply(Camera *cam, int cmd, int size) {
         return true;
 }
 
-void clearBuffer(Camera *cam) {
+void clearBuffer(Camera_t *cam) {
     int t_count = 0;
     int length = 0;
     int timeout = 2 * TO_SCALE;
@@ -163,7 +163,7 @@ void clearBuffer(Camera *cam) {
     }
 }
 
-void reset(Camera *cam) {
+void reset(Camera_t *cam) {
     // Camera Reset method
     serialPutchar(cam->fd, (char)0x56);
     serialPutchar(cam->fd, (char)cam->serialNum);
@@ -176,7 +176,7 @@ void reset(Camera *cam) {
     clearBuffer(cam);
 }
 
-void resumeVideo(Camera *cam)
+void resumeVideo(Camera_t *cam)
 {
     serialPutchar(cam->fd, (char)0x56);
     serialPutchar(cam->fd, (char)cam->serialNum);
@@ -188,7 +188,7 @@ void resumeVideo(Camera *cam)
         printf("Camera did not resume\n");
 }
 
-char * getVersion(Camera *cam)
+char * getVersion(Camera_t *cam)
 {
 	printf("getVersion() called.\n");
     serialPutchar(cam->fd, (char)0x56);
@@ -226,7 +226,7 @@ char * getVersion(Camera *cam)
     return cam->camerabuff;
 }
 
-void setMotionDetect(Camera *cam, int flag)
+void setMotionDetect(Camera_t *cam, int flag)
 {
     serialPutchar(cam->fd, (char)0x56);
     serialPutchar(cam->fd, (char)0x00);
@@ -247,7 +247,7 @@ void setMotionDetect(Camera *cam, int flag)
 }
 
 
-char * takePicture(Camera *cam, const char * file_path)
+char * takePicture(Camera_t *cam, const char * file_path)
 {
     cam->frameptr = 0;
 
@@ -268,7 +268,7 @@ char * takePicture(Camera *cam, const char * file_path)
     if (checkReply(cam, FBUF_CTRL, 5) == false)
     {
         printf("Frame checkReply Failed\n");
-        return cam->empty;
+        return cam->&empty;
     }
 
 
@@ -281,7 +281,7 @@ char * takePicture(Camera *cam, const char * file_path)
     if (checkReply(cam, GET_FBUF_LEN, 5) == false)
     {
         printf("FBUF_LEN REPLY NOT VALID!!!\n");
-        return cam->empty;
+        return cam->&empty;
     }
 
     while(serialDataAvail(cam->fd) <= 0){}
@@ -333,7 +333,7 @@ char * takePicture(Camera *cam, const char * file_path)
             
         if (checkReply(cam, READ_FBUF, 5) == false)
         {
-            return cam->empty;
+            return cam->&empty;
         }
         
         int counter = 0;

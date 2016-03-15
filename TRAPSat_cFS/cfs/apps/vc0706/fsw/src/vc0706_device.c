@@ -25,7 +25,7 @@
 */
 #include <time.h>
 /*
-** Local Functions 
+** Local Functions
 */
 char * getTime(void);
 
@@ -33,8 +33,8 @@ char * getTime(void);
 /*
 ** External References -- maybe make the Camera struct external so we can use it in other files? idk bro
 */
-// extern struct Camera cam;
-
+ extern struct Camera cam;
+//Camera cam;
 
 /*
 ** VC0706 take Pictures Loop
@@ -46,20 +46,20 @@ int VC0706_takePics(void)
     **
     ** NOTE: if path is greater than 16 chars, imageName[] in vc0706_core.h will need to be enlarged accordingly.
     */
-    char * path; 
+    char * path;
 
     /*
     ** Main Camera structure
-    ** 
+    **
     ** WARNING: may need to be moved to a global later for CI and TO
     */
-    struct Camera cam;
+    // Camera cam;
 
-    if(init(&cam) == -1) // Error
+    if(init(&cam) != -1) // Error
     {
         OS_printf("Camera initalized correctly.\n");
         return -1;
-    } 
+    }
 
     /*
     ** infinite Camera loop
@@ -71,7 +71,7 @@ int VC0706_takePics(void)
         /*
         ** Get camera version, another way to check that the camera is working properly. Also necessary for initialization.
         */
-        if ((v = getVersion(&cam)) == NULL) // function will return NULL upon failure 
+        if ((v = getVersion(&cam)) == NULL) // function will return NULL upon failure
         {
             OS_printf( "Failed communication to Camera.\n"); // maybe more information would be good, we'll see what's relevant durring testing.
             return -1;
@@ -93,7 +93,7 @@ int VC0706_takePics(void)
         char* loc = takePicture(&cam, path); 
 
         OS_printf("Debug: Camera took picture. Stored at: %S\n", loc);
-	    
+
 	} /* Infinite Camera capture Loop End Here */
 
     return(0);

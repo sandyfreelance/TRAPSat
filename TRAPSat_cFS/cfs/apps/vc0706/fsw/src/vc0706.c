@@ -27,6 +27,11 @@ CFE_SB_MsgPtr_t    VC0706MsgPtr;
 
 uint32             VC0706_ChildTaskID;
 
+/*
+** Main Camera struct
+*/
+Camera_t cam;
+
 static CFE_EVS_BinFilter_t  VC0706_EventFilters[] =
        {  /* Event ID    mask */
           {VC0706_STARTUP_INF_EID,       0x0000},
@@ -41,11 +46,6 @@ static CFE_EVS_BinFilter_t  VC0706_EventFilters[] =
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  * *  * * * * **/
 void VC0706_AppMain( void )
 {
-	/*
-	** Test
-	*/
-	// Camera cam;
-
     int32  status;
     uint32 RunStatus = CFE_ES_APP_RUN;
 
