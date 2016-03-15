@@ -4,14 +4,14 @@
  * Edited By Zach Richard for use on TRAPSat aboard the RockSat-X 2016 Mission
  */
 
-
-
-#include <time.h> // #include <ctime>
+#include <time.h>
 #include <errno.h>
 #include <stdbool.h>
 
 #include <stdint.h>
 #include <stdlib.h>
+
+
 
 // Brian's DEPS
 #include <stdio.h>
@@ -74,7 +74,6 @@ typedef struct Camera {
     int motion;
     int ready;
     int fd;
-    uint8_t offscreen[8]; // font width;
 
     int frameptr;
     int bufferLen;
@@ -89,7 +88,7 @@ typedef struct Camera {
 
 
 
-void init(Camera *cam) {
+int init(Camera *cam) {
     cam->frameptr = 0;
     cam->bufferLen = 0;
     cam->serialNum = 0;
@@ -99,13 +98,13 @@ void init(Camera *cam) {
     if ((cam->fd = serialOpen("/dev/ttyAMA0", BAUD)) < 0)
     {
         fprintf(stderr, "SPI Setup Failed: %s\n", strerror(errno));
-    	printf("SPI Setup failed.\n");
+    	printf("Camera SPI Setup failed.\n");
     }
 
     if (wiringPiSetup() == -1)
     {
         printf("wiringPiSetup(0 failed.\n");
-	exit(1);
+	    return -1;
     }
 
     cam->ready = 1;
