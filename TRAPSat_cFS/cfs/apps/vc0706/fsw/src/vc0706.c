@@ -45,7 +45,7 @@ void VC0706_AppMain( void )
 	** Test
 	*/
 	// Camera cam;
-	 
+
     int32  status;
     uint32 RunStatus = CFE_ES_APP_RUN;
 
@@ -62,7 +62,7 @@ void VC0706_AppMain( void )
 
         /* Pend on receipt of command packet -- timeout set to 500 millisecs */
         status = CFE_SB_RcvMsg(&VC0706MsgPtr, VC0706_CommandPipe, 500); // compilation complains here -- VC0706msgPtr -> VC0706MsgPtr
-        
+
         CFE_ES_PerfLogEntry(VC0706_PERF_ID);
 
         if (status == CFE_SUCCESS)
@@ -90,7 +90,7 @@ void VC0706_AppInit(void)
 
     /*
     ** Register the events
-    */ 
+    */
     CFE_EVS_Register(VC0706_EventFilters,
                      sizeof(VC0706_EventFilters)/sizeof(CFE_EVS_BinFilter_t),
                      CFE_EVS_BINARY_FILTER);

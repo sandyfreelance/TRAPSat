@@ -3,9 +3,9 @@
 **
 ** Purpose:
 **   This is a source file for the VC0706 application
-**   
+**
 **   int VC0706_takePics(void) "VC0706 Camera capture Loop"
-**     -  
+**
 **
 *******************************************************************************/
 /*
@@ -18,7 +18,12 @@
 #include "vc0706_events.h"
 #include "vc0706_version.h"
 #include "vc0706_child.h"
+#include "vc0706_core.h"
 
+/*
+** Time -- maybe changed to cFS specific implementation in the future.
+*/
+#include <time.h>
 /*
 ** Local Functions 
 */
@@ -26,19 +31,19 @@ char * getTime(void);
 
 
 /*
-** External References
+** External References -- maybe make the Camera struct external so we can use it in other files? idk bro
 */
-//extern VC0706_Ch_Data_t VC0706_ChannelData;
+// extern struct Camera cam;
 
 
 /*
 ** VC0706 take Pictures Loop
 */
 int VC0706_takePics(void)
-{   
+{
     /*
-    ** Path that pictures should be stored in 
-    ** 
+    ** Path that pictures should be stored in
+    **
     ** NOTE: if path is greater than 16 chars, imageName[] in vc0706_core.h will need to be enlarged accordingly.
     */
     char * path; 
@@ -48,7 +53,7 @@ int VC0706_takePics(void)
     ** 
     ** WARNING: may need to be moved to a global later for CI and TO
     */
-    Camera cam;
+    struct Camera cam;
 
     if(init(&cam) == -1) // Error
     {
@@ -62,11 +67,11 @@ int VC0706_takePics(void)
     */
     for ( ; ; ) // NOTE: we will need to add flash and MUX implementation. Easy, but should be broken into separate headers.
     {
-
+	char *v;
         /*
         ** Get camera version, another way to check that the camera is working properly. Also necessary for initialization.
         */
-        if ((char* v = getVersion(&cam)) == NULL) // function will return NULL upon failure 
+        if ((v = getVersion(&cam)) == NULL) // function will return NULL upon failure 
         {
             OS_printf( "Failed communication to Camera.\n"); // maybe more information would be good, we'll see what's relevant durring testing.
             return -1;
@@ -102,11 +107,11 @@ char * getTime(void)
     time(&raw_t);
     struct tm * timeinfo;
     timeinfo = localtime( &raw_t );
-    printf("%s\n", asctime(timeinfo));
+    //printf("%s\n", asctime(timeinfo));
 
     //sprintf(curr_time, "%s", (char[])asctime( timeinfo ) );
     curr_time = asctime(timeinfo);
-    char * i; 
+    char * i;
     for(i=curr_time; *i ; i++)
     {
         if( *i == ' ')

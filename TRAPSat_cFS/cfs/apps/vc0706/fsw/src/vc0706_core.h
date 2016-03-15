@@ -3,6 +3,8 @@
  *
  * Edited By Zach Richard for use on TRAPSat aboard the RockSat-X 2016 Mission
  */
+#ifdef _vc0706_core_h_
+#define _vc0706_core_h
 
 #include <time.h>
 #include <errno.h>
@@ -394,3 +396,6 @@ char * takePicture(Camera *cam, const char * file_path)
 // End Brian's Methods
 
 // There once was a bunch of Node JS code here .... it is gone now -- Zach
+
+
+#endif /* _vc0706_core_h__ */
