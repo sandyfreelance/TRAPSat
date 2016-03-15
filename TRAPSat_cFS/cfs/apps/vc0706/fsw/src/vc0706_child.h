@@ -21,7 +21,7 @@
 /* Check necessity of each of these to trim fat */
 
 extern vc0706_hk_tlm_t       VC0706_HkTelemetryPkt;
-// extern uint32                VC0706_ChildTaskID;
+extern uint32                VC0706_ChildTaskID;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
