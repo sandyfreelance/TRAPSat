@@ -11,13 +11,16 @@
 /*
 ** Platform Required header files
 */
-#include <stdio.h>   /* Standard input/output definitions */
-#include <fcntl.h>   /* File control definitions */
-#include <termios.h> /* POSIX terminal control definitions */
+/*
+#include <stdio.h>   // Standard input/output definitions 
+#include <fcntl.h>   // File control definitions 
+#include <termios.h> // POSIX terminal control definitions 
 #include <stdlib.h>
 #include <linux/i2c-dev.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
+*/
+
 /* Check necessity of each of these to trim fat */
 
 extern vc0706_hk_tlm_t       VC0706_HkTelemetryPkt;

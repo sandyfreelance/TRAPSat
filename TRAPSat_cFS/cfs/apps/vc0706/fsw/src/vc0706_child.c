@@ -1,14 +1,15 @@
 /*
 ** Required Headers
 */
-#include "vc0706.h"
+#include "vc0706_child.h"
+/*
 #include "vc0706_perfids.h"
 #include "vc0706_msgids.h"
 #include "vc0706_msg.h"
 #include "vc0706_events.h"
 #include "vc0706_version.h"
 #include "vc0706_child.h"
-
+*/
 int VC0706_takePics(void);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -79,7 +80,7 @@ void VC0706_ChildTask(void)
         CFE_EVS_SendEvent(VC0706_CHILD_INIT_EID, CFE_EVS_INFORMATION,
            "%s initialization complete", TaskText);
 
-        /* 
+        /*
         ** Child task process loop
         */
         VC0706_takePics();

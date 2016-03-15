@@ -4,8 +4,10 @@
  * Edited By Zach Richard for use on TRAPSat aboard the RockSat-X 2016 Mission
  */
 #ifndef _vc0706_core_h_
-#define _vc0706_core_h
+#define _vc0706_core_h_
 
+#include "vc0706.h"
+/*
 #include <time.h>
 #include <errno.h>
 #include <stdbool.h>
@@ -25,6 +27,7 @@
 
 #include <wiringSerial.h>
 #include <wiringPi.h>
+*/
 
 // Brian's Defines
 #define BAUD 38400

@@ -12,18 +12,8 @@
 ** VC0706 Master Header
 */
 #include "vc0706.h"
-#include "vc0706_perfids.h"
-#include "vc0706_msgids.h"
-#include "vc0706_msg.h"
-#include "vc0706_events.h"
-#include "vc0706_version.h"
-#include "vc0706_child.h"
-#include "vc0706_core.h"
 
-/*
-** Time -- maybe changed to cFS specific implementation in the future.
-*/
-#include <time.h>
+
 /*
 ** Local Functions
 */
@@ -33,7 +23,7 @@ char * getTime(void);
 /*
 ** External References -- maybe make the Camera struct external so we can use it in other files? idk bro
 */
- extern struct Camera_t cam;
+extern struct Camera_t cam;
 
 /*
 ** VC0706 take Pictures Loop

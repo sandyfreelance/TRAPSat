@@ -19,14 +19,34 @@
 #include "cfe_sb.h"
 #include "cfe_es.h"
 
-#include <string.h>
+
+/*
+** App specific files
+*/
+#include <time.h>
 #include <errno.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <unistd.h>
+#include <wiringSerial.h>
+#include <wiringPi.h>
+
+#include "vc0706_core.h"
+
+#include "vc0706_perfids.h"
+#include "vc0706_msgids.h"
+#include "vc0706_msg.h"
+#include "vc0706_events.h"
+#include "vc0706_version.h"
 
 /***********************************************************************/
 
 #define VC0706_PIPE_DEPTH                     32
-
 
 /*
 ** VC0706 Child Task Definitions

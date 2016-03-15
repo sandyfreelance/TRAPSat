@@ -10,16 +10,16 @@
 **   Include Files:
 */
 
-#include "vc0706_core.h" // Main camera struct and functions
+#include "vc0706.h" // Main Header
 
-#include "vc0706.h" // Main header
+//#include "vc0706_core.h" // Main camera struct and functions"
 
-#include "vc0706_perfids.h"
-#include "vc0706_msgids.h"
-#include "vc0706_msg.h"
-#include "vc0706_events.h"
-#include "vc0706_version.h"
-#include "vc0706_child.h"
+//#include "vc0706_perfids.h"
+//#include "vc0706_msgids.h"
+//#include "vc0706_msg.h"
+//#include "vc0706_events.h"
+//#include "vc0706_version.h"
+//#include "vc0706_child.h"
 
 
 /*
@@ -30,6 +30,7 @@ CFE_SB_PipeId_t    VC0706_CommandPipe;
 CFE_SB_MsgPtr_t    VC0706MsgPtr;
 
 uint32             VC0706_ChildTaskID;
+
 
 /*
 ** Main Camera struct
