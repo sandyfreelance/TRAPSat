@@ -19,6 +19,9 @@
 #include "cfe_sb.h"
 #include "cfe_es.h"
 
+/*
+** Main Camera Code
+*/
 #include "vc0706_core.h"
 
 #include <string.h>
@@ -28,6 +31,15 @@
 /***********************************************************************/
 
 #define VC0706_PIPE_DEPTH                     32
+
+
+/*
+** VC0706 Child Task Definitions
+*/
+#define VC0706_CHILD_TASK_NAME        "CAMERA_CONTROL"
+#define VC0706_CHILD_TASK_STACK_SIZE  8192               
+#define VC0706_CHILD_TASK_PRIORITY    200
+
 
 /************************************************************************
 ** Type Definitions

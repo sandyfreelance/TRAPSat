@@ -16,7 +16,7 @@
 #include "vc0706_msg.h"
 #include "vc0706_events.h"
 #include "vc0706_version.h"
-
+#include "vc0706_child.h"
 /*
 ** global data
 */

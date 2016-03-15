@@ -99,6 +99,7 @@ int init(Camera *cam) {
     {
         fprintf(stderr, "SPI Setup Failed: %s\n", strerror(errno));
     	printf("Camera SPI Setup failed.\n");
+    	    return -1;
     }
 
     if (wiringPiSetup() == -1)
@@ -108,6 +109,7 @@ int init(Camera *cam) {
     }
 
     cam->ready = 1;
+	return 0;
 }
 
 bool checkReply(Camera *cam, int cmd, int size) {
