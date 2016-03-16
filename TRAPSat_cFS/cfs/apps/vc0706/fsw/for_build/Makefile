@@ -21,7 +21,7 @@ ENTRY_PT = VC0706_AppMain
 #
 # Object files required to build subsystem.
 #
-OBJS = vc0706.o vc0706_child.o vc0706_device.o
+OBJS = vc0706.o vc0706_core.o vc0706_child.o vc0706_device.o
 
 #
 # Source files required to build subsystem; used to generate dependencies.
@@ -49,7 +49,7 @@ EXEDIR=../exe
 ## entry like the following:
 ##  -R../tst_lib/tst_lib.elf
 ##
-SHARED_LIB_LINK = -lwiringPi 
+SHARED_LIB_LINK = #-lwiringPi 
 
 ########################################################################
 # Should not have to change below this line, except for customized 

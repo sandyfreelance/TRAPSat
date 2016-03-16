@@ -92,6 +92,6 @@ void reset(Camera_t *cam);
 void resumeVideo(Camera_t *cam);
 char * getVersion(Camera_t *cam);
 void setMotionDetect(Camera_t *cam, int flag);
-char * takePicture(Camera_t *cam, const char * file_path);
+char * takePicture(Camera_t *cam, char * file_path);
 
 #endif /* _vc0706_core_h__ */

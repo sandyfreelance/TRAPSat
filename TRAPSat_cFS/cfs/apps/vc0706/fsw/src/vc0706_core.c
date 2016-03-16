@@ -163,7 +163,7 @@ void setMotionDetect(Camera_t *cam, int flag)
     clearBuffer(cam);
 }
 
-char * takePicture(Camera_t *cam, const char * file_path)
+char * takePicture(Camera_t *cam, char * file_path)
 {
     cam->frameptr = 0;
 

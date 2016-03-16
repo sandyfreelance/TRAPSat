@@ -110,6 +110,8 @@ void VC0706_AppInit(void)
 
     VC0706_ResetCounters();
 
+    VC0706_ChildInit();
+
     CFE_SB_InitMsg(&VC0706_HkTelemetryPkt,
                    VC0706_HK_TLM_MID,
                    VC0706_HK_TLM_LNGTH, TRUE);

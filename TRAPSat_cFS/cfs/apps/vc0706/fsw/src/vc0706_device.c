@@ -35,7 +35,7 @@ int VC0706_takePics(void)
     **
     ** NOTE: if path is greater than 16 chars, imageName[] in vc0706_core.h will need to be enlarged accordingly.
     */
-    char * path;
+    char * path = "";
 
     /*
     ** Main Camera structure
@@ -44,9 +44,9 @@ int VC0706_takePics(void)
     */
     // Camera cam;
 
-    if(init(&cam) != -1) // Error
+    if(init(&cam) == -1) // Error
     {
-        OS_printf("Camera initalized correctly.\n");
+        OS_printf("Camera initialization error.\n");
         return -1;
     }
 
@@ -73,13 +73,14 @@ int VC0706_takePics(void)
         /*
         ** Set Path for the new image
         */
-        // sprintf(path, "/path/to/images/%s.jpg", time); // need method to get current time or something.
+	OS_prinf("VC0706: Calling sprintf()...\n");
         sprintf(path, "/home/pi/TRAPSat/images/%s.jpg", getTime());
 
         /*
         ** Actually takes the picture
         */
-        char* loc = takePicture(&cam, path); 
+	OS_printf("VC0706: Calling takePicture()...\n");
+        char* loc = takePicture(&cam, path);
 
         OS_printf("Debug: Camera took picture. Stored at: %S\n", loc);
 
