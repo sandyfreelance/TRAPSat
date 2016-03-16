@@ -73,9 +73,9 @@ int VC0706_takePics(void)
         /*
         ** Set Path for the new image
         */
-	OS_prinf("VC0706: Calling sprintf()...\n");
-        sprintf(path, "/home/pi/TRAPSat/images/%s.jpg", getTime());
-
+	OS_printf("VC0706: Calling sprintf()...\n");
+        //sprintf(path, "/home/pi/TRAPSat/images/%s.jpg", getTime());
+	path = "/home/pi/TRAPSat/images/test.jpg";
         /*
         ** Actually takes the picture
         */

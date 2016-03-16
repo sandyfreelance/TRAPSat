@@ -209,7 +209,9 @@ char * takePicture(Camera_t *cam, char * file_path)
     len <<= 8;
     len |= serialGetchar(cam->fd);
 
-    printf("Length %u \n", len);
+    printf("Length %d \n", len);
+
+printf("test point 0\n");
 
     if(len > 20000){
         printf("To Large... \n");
@@ -217,15 +219,17 @@ char * takePicture(Camera_t *cam, char * file_path)
         clearBuffer(cam);
         return takePicture(cam, file_path);
     }
-    
-    char image[len];
-    
+printf("test point 1\n");
+    char image[len] = ;
+printf("test point 2\n");
+
     int imgIndex = 0;
-    
+printf("test point 3\n");
+
     while (len > 0)
     {
         int readBytes = len;
-        
+
         serialPutchar(cam->fd, (char)0x56);
         serialPutchar(cam->fd, (char)cam->serialNum);
         serialPutchar(cam->fd, (char)READ_FBUF);
@@ -242,17 +246,18 @@ char * takePicture(Camera_t *cam, char * file_path)
         serialPutchar(cam->fd, (char)(readBytes & 0xFF));
         serialPutchar(cam->fd, (char)(CAMERADELAY >> 8));
         serialPutchar(cam->fd, (char)(CAMERADELAY & 0xFF));
-            
+
         if (checkReply(cam, READ_FBUF, 5) == false)
         {
+	    printf("VC0706: Error! checkReply(cam, READ_FBUF, 5) returned false.\n");
             return &cam->empty;
         }
-        
+
         int counter = 0;
         cam->bufferLen = 0;
         int avail = 0;
         int timeout = 20 * TO_SCALE;
-        
+
         while ((timeout != counter) && cam->bufferLen < readBytes)
         {
             avail = serialDataAvail(cam->fd);
@@ -266,19 +271,20 @@ char * takePicture(Camera_t *cam, char * file_path)
             counter = 0;
             int newChar = serialGetchar(cam->fd);
             image[imgIndex++] = (char)newChar;
-            
+
             cam->bufferLen++;
         }
-        
+
         cam->frameptr += readBytes;
         len -= readBytes;
-        
+
         if (checkReply(cam, READ_FBUF, 5) == false)
         {
             printf("ERROR READING END OF CHUNK| start: %u | length: %u\n", cam->frameptr, len);
         }
     }
-       
+
+    printf("VC0706_CORE: Attempting to open file...\n");
     FILE *jpg = fopen(file_path, "w");
     if (jpg != NULL)
     {
@@ -289,15 +295,15 @@ char * takePicture(Camera_t *cam, char * file_path)
     {
         printf("IMAGE COULD NOT BE OPENED/MADE!\n");
     }
-    
+
 //    if(sizeof(file_path) < sizeof(cam->imageName))
     	sprintf(cam->imageName, "%s", file_path);
-    
+
     resumeVideo(cam);
 
     //Clear Buffer
     clearBuffer(cam);
-    
+
     return cam->imageName;
 }
 
