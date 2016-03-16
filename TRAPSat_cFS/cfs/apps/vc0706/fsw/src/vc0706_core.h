@@ -65,10 +65,9 @@
 
 #define CAMERABUFFSIZ 100
 #define CAMERADELAY 10
-
 #define TO_SCALE 1
-//#define TO_U 200000
-#define TO_U 1000000
+#define TO_U 200000
+//#define TO_U 1000000
 
 typedef struct Camera_t {
     int motion;

@@ -219,7 +219,7 @@ char * takePicture(Camera_t *cam, char * file_path)
     }
     //char image[len];
     char * image = malloc(len+1);
-    image[len+1] = NULL;
+    //image[len+1] = NULL;
 
     int imgIndex = 0;
 
@@ -268,8 +268,8 @@ char * takePicture(Camera_t *cam, char * file_path)
             counter = 0;
             int newChar = serialGetchar(cam->fd);
             //printf("VC0706: writing byte %x to image[%d]\n", newChar, imgIndex);
-	    //image[imgIndex++] = (char)newChar;
-	    memcpy((&image + (sizeof(image)*imgIndex++)), (char)&newChar, sizeof(image));
+	    image[imgIndex++] = (char)newChar;
+	    //memcpy((&image + (sizeof(image[0])*imgIndex++)), (char)&newChar, sizeof(char));
 	    //printf("VC0706: image[%d]: %x\n\n", imgIndex-1, image[imgIndex-1]);
 
             cam->bufferLen++;
@@ -294,20 +294,19 @@ char * takePicture(Camera_t *cam, char * file_path)
 	{
 		i++;
 	}
-	printf("VC0706: Manual determined length of image: %d bytes\n", i);
-
-	printf("VC0706: Image being stored. Size of image: %zu\n", strlen(image));
-        size_t stored = fwrite(image, sizeof(image[0]), strlen(image), jpg);
+	//printf("VC0706: Manual determined length of image: %d bytes\n", i);
+        size_t stored = fwrite(image, sizeof(image[0]), imgIndex, jpg);
         fclose(jpg);
-	printf("VC0706: number of stored bytes:%zu\n", stored);
+	//printf("VC0706: number of stored bytes:%zu\n", stored);
+	if((size_t)i != stored)
+	{
+    	    printf("VC0706 ERROR: image stored %zu bytes, expected to store %d bytes\n", stored, i);
+	}
     }
     else
     {
         printf("IMAGE COULD NOT BE OPENED/MADE!\n");
     }
-
-//    if(sizeof(file_path) < sizeof(cam->imageName))
-//    	sprintf(cam->imageName, "%s", file_path);
 
     printf("VC0706: copying file_path <%s> to imageName\n", file_path);
     strcpy(cam->imageName, file_path);

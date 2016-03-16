@@ -54,7 +54,8 @@ int VC0706_takePics(void)
     ** infinite Camera loop
     ** w/ no delay
     */
-    for ( ; ; ) // NOTE: we will need to add flash and MUX implementation. Easy, but should be broken into separate headers.
+    int i;
+    for (i=0; ;i++) // NOTE: we will need to add flash and MUX implementation. Easy, but should be broken into separate headers.
     {
 	char *v;
         /*
@@ -75,7 +76,7 @@ int VC0706_takePics(void)
         */
 	OS_printf("VC0706: Calling sprintf()...\n");
         //sprintf(path, "/home/pi/TRAPSat/images/%s.jpg", getTime());
-	path = "/home/pi/TRAPSat/images/test.jpg";
+	sprintf(path, "/home/pi/TRAPSat/images/test_%d.jpg", i);
         /*
         ** Actually takes the picture
         */
