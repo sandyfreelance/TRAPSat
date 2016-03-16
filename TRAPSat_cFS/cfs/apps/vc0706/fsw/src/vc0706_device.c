@@ -35,7 +35,7 @@ int VC0706_takePics(void)
     **
     ** NOTE: if path is greater than 16 chars, imageName[] in vc0706_core.h will need to be enlarged accordingly.
     */
-    char * path = "";
+    char * path = malloc(OS_MAX_PATH_LEN);
 
     /*
     ** Main Camera structure
@@ -76,8 +76,10 @@ int VC0706_takePics(void)
         */
 	OS_printf("VC0706: Calling sprintf()...\n");
         //sprintf(path, "/home/pi/TRAPSat/images/%s.jpg", getTime());
-	sprintf(path, "/home/pi/TRAPSat/images/test_%d.jpg", i);
-        /*
+	int ret = sprintf(path, "/home/pi/TRAPSat/images/test_%d.jpg", i);
+
+	printf("sprintf returned: %d\n", ret);
+	/*
         ** Actually takes the picture
         */
 	OS_printf("VC0706: Calling takePicture()...\n");
