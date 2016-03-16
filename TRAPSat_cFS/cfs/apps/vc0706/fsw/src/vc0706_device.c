@@ -75,10 +75,14 @@ int VC0706_takePics(void)
         ** Set Path for the new image
         */
 	OS_printf("VC0706: Calling sprintf()...\n");
-        //sprintf(path, "/home/pi/TRAPSat/images/%s.jpg", getTime());
-	int ret = sprintf(path, "/home/pi/TRAPSat/images/test_%d.jpg", i);
+	char * time = getTime();
+        int ret = sprintf(path, "/home/pi/TRAPSat/images/%s.jpg", time);
+	//int ret = sprintf(path, "/home/pi/TRAPSat/images/test_%d.jpg", i);
+	if(ret < 0)
+	{
+	    printf("sprintf err: %s\n", strerror(ret));
+	}
 
-	printf("sprintf returned: %d\n", ret);
 	/*
         ** Actually takes the picture
         */
@@ -111,6 +115,8 @@ char * getTime(void)
             *i = '_';
         if( *i == ':')
             *i = '-';
+	if( *i == '\n')
+	    *i = '\0';
     }
 
     return curr_time;
