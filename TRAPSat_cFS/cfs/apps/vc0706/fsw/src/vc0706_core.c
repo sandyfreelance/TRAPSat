@@ -196,11 +196,11 @@ char * takePicture(Camera_t *cam, char * file_path)
         return &cam->empty;
     }
 
-    while(serialDataAvail(cam->fd) <= 0){}
+    while(serialDataAvail(cam->fd) <= 0){;}
 
-    printf("Serial Data Avail %u \n", serialDataAvail(cam->fd));
+    printf("Serial Data Avail %d \n", serialDataAvail(cam->fd));
 
-    int len;
+    unsigned int len;
     len = serialGetchar(cam->fd);
     len <<= 8;
     len |= serialGetchar(cam->fd);
@@ -209,9 +209,7 @@ char * takePicture(Camera_t *cam, char * file_path)
     len <<= 8;
     len |= serialGetchar(cam->fd);
 
-    printf("Length %d \n", len);
-
-printf("test point 0\n");
+    printf("Length %u \n", len);
 
     if(len > 20000){
         printf("To Large... \n");
@@ -219,17 +217,15 @@ printf("test point 0\n");
         clearBuffer(cam);
         return takePicture(cam, file_path);
     }
-printf("test point 1\n");
     //char image[len];
     char * image = malloc(len+1);
-printf("test point 2\n");
+    image[len+1] = NULL;
 
     int imgIndex = 0;
-printf("test point 3\n");
 
     while (len > 0)
     {
-        int readBytes = len;
+        unsigned int readBytes = len;
 
         serialPutchar(cam->fd, (char)0x56);
         serialPutchar(cam->fd, (char)cam->serialNum);
@@ -271,7 +267,9 @@ printf("test point 3\n");
             }
             counter = 0;
             int newChar = serialGetchar(cam->fd);
-            image[imgIndex++] = (char)newChar;
+            //printf("VC0706: writing byte %x to image[%d]\n", newChar, imgIndex);
+	    image[imgIndex++] = (char)newChar;
+	    //printf("VC0706: image[%d]: %x\n\n", imgIndex-1, image[imgIndex-1]);
 
             cam->bufferLen++;
         }
@@ -289,9 +287,18 @@ printf("test point 3\n");
     FILE *jpg = fopen(file_path, "w");
     if (jpg != NULL)
     {
-	printf("VC0706: Image being stored...\n");
-        fwrite(image, sizeof(char), sizeof(image), jpg);
+	// test
+	int i=0;
+	while(image[i] != '\0')
+	{
+		i++;
+	}
+	printf("VC0706: Manual determined length of image: %d bytes\n", i);
+
+	printf("VC0706: Image being stored. Size of image: %zu\n", strlen(image));
+        size_t stored = fwrite(image, sizeof(image[0]), strlen(image), jpg);
         fclose(jpg);
+	printf("VC0706: number of stored bytes:%zu\n", stored);
     }
     else
     {
