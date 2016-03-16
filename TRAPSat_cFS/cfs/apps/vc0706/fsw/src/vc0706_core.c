@@ -221,7 +221,7 @@ printf("test point 0\n");
     }
 printf("test point 1\n");
     //char image[len];
-    char * image = malloc(len);
+    char * image = malloc(len+1);
 printf("test point 2\n");
 
     int imgIndex = 0;
@@ -289,6 +289,7 @@ printf("test point 3\n");
     FILE *jpg = fopen(file_path, "w");
     if (jpg != NULL)
     {
+	printf("VC0706: Image being stored...\n");
         fwrite(image, sizeof(char), sizeof(image), jpg);
         fclose(jpg);
     }
@@ -298,8 +299,10 @@ printf("test point 3\n");
     }
 
 //    if(sizeof(file_path) < sizeof(cam->imageName))
-    	sprintf(cam->imageName, "%s", file_path);
+//    	sprintf(cam->imageName, "%s", file_path);
 
+    printf("VC0706: copying file_path <%s> to imageName\n", file_path);
+    strcpy(cam->imageName, file_path);
     resumeVideo(cam);
 
     //Clear Buffer

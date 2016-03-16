@@ -82,7 +82,7 @@ int VC0706_takePics(void)
 	OS_printf("VC0706: Calling takePicture()...\n");
         char* loc = takePicture(&cam, path);
 
-        OS_printf("Debug: Camera took picture. Stored at: %S\n", loc);
+        OS_printf("Debug: Camera took picture. Stored at: %s\n", loc);
 
 	} /* Infinite Camera capture Loop End Here */
 
