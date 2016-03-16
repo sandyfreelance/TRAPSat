@@ -236,7 +236,7 @@ void VC0706_ResetCounters(void)
 /*                                                                            */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * **/
 boolean VC0706_VerifyCmdLength(CFE_SB_MsgPtr_t msg, uint16 ExpectedLength)
-{     
+{
     boolean result = TRUE;
 
     uint16 ActualLength = CFE_SB_GetTotalMsgLength(msg);

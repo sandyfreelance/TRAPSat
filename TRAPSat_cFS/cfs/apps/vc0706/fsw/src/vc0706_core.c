@@ -220,7 +220,8 @@ printf("test point 0\n");
         return takePicture(cam, file_path);
     }
 printf("test point 1\n");
-    char image[len] = ;
+    //char image[len];
+    char * image = malloc(len);
 printf("test point 2\n");
 
     int imgIndex = 0;
