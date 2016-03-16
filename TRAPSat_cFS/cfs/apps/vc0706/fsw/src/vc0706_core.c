@@ -268,7 +268,8 @@ char * takePicture(Camera_t *cam, char * file_path)
             counter = 0;
             int newChar = serialGetchar(cam->fd);
             //printf("VC0706: writing byte %x to image[%d]\n", newChar, imgIndex);
-	    image[imgIndex++] = (char)newChar;
+	    //image[imgIndex++] = (char)newChar;
+	    memcpy((&image + (sizeof(image)*imgIndex++)), (char)&newChar, sizeof(image));
 	    //printf("VC0706: image[%d]: %x\n\n", imgIndex-1, image[imgIndex-1]);
 
             cam->bufferLen++;
