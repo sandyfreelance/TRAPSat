@@ -10,6 +10,8 @@
 #ifndef	_vc0706_mux_h_
 #define _vc0706_mux_h_
 
+#include "vc0706.h"
+
 
 typedef struct { // Not sure how much should be implimented in this struct
 	int mux_select_pin; // Expects GPIO for mux select line

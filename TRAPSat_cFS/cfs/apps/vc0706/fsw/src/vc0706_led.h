@@ -13,6 +13,8 @@
 #ifndef _vc0706_led_h_
 #define _vc0706_led_h_
 
+#include "vc0706.h"
+
 
 typedef struct {
 	int led_pin; 	/* Expects a GPIO pin value for the LEDs */
