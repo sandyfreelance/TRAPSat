@@ -7,25 +7,26 @@
 **
 *******************************************************************************/
 
+#include "vc0706_mux.h"
 
 int mux_init(mux_t *mux, int select_pin) {
-	mux->mux_select_pin = select_pin; 
-	pinMode(select_pin, OUTPUT); 
-	int ret = mux_select(mux, 0); // initialize low 
-	return ret;         
+	mux->mux_select_pin = select_pin;
+	pinMode(select_pin, OUTPUT);
+	int ret = mux_select(mux, 0); // initialize low
+	return ret;
 }
 
 int mux_select(mux_t *mux, int select) { 
 	if(select == 1)
 	{
 		digitalWrite(mux->mux_select_pin, HIGH);
-		mux->mu_state = 1;
+		mux->mux_state = 1;
 		return 0;
 	}
 	else if(select == 0)
 	{
 		digitalWrite(mux->mux_select_pin, LOW);
-		mux->mu_state = 0;
+		mux->mux_state = 0;
 		return 0;
 	}
 	else

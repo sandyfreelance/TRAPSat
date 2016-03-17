@@ -42,12 +42,12 @@ int VC0706_takePics(void)
     /*
     ** Attempt to initialize LED
     */
-    led_init(&led, LED_PIN);
+    led_init(&led, (int)LED_PIN);
 
     /*
     ** Initialize MUX
     */
-    if(mux_init(&mux, MUX_SEL_PIN) == -1)
+    if(mux_init(&mux, (int)MUX_SEL_PIN) == -1)
     {
         OS_printf("MUX initialization error.\n");
         return -1;

@@ -16,7 +16,7 @@
 #include "vc0706.h"
 
 
-typedef struct {
+typedef struct led_t {
 	int led_pin; 	/* Expects a GPIO pin value for the LEDs */
 	int led_status;	/* Hold the status of the led, 0 is off 1 is on */
 } led_t;

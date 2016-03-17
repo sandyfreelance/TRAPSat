@@ -10,7 +10,7 @@
 // Requires WiringPi
 // #include <wiringPi.h>
 
-#include vc0706_led.h
+#include "vc0706_led.h"
 
 void led_init(led_t *led, int pin) { 
 	led->led_pin=pin; 
