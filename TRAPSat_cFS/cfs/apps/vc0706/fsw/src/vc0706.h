@@ -10,6 +10,10 @@
 #ifndef _vc0706_h_
 #define _vc0706_h_
 
+
+#define MUX_SEL_PIN	13	// GPIO pin for SN74 Select line
+#define LED_PIN		16	// GPIO pin for LEDs
+
 /*
 ** Required header files.
 */
@@ -35,6 +39,9 @@
 #include <unistd.h>
 #include <wiringSerial.h>
 #include <wiringPi.h>
+
+#include "vc0706_led.h"
+#include "vc0706_mux.h"
 
 #include "vc0706_core.h"
 

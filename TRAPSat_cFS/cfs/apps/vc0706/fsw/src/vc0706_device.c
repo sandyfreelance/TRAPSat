@@ -21,8 +21,10 @@ char * getTime(void);
 
 
 /*
-** External References -- maybe make the Camera struct external so we can use it in other files? idk bro
+** External References 
 */
+extern struct led_t led;
+extern struct mux_t mux;
 extern struct Camera_t cam;
 
 /*
@@ -38,12 +40,26 @@ int VC0706_takePics(void)
     char * path = malloc(OS_MAX_PATH_LEN);
 
     /*
-    ** Main Camera structure
-    **
-    ** WARNING: may need to  be moved to a global later for CI and TO
-    */
-    // Camera cam;
+    ** Attempt to initialize LED
+    */ 
+    if(led_init(&led, LED_PIN) == -1)
+    {
+        OS_printf("LED initialization error.\n");
+        return -1;
+    }
 
+    /*
+    ** Initialize MUX
+    */
+    if(mux_init(&mux, MUX_SEL_PIN) == -1)
+    {
+        OS_printf("MUX initialization error.\n");
+        return -1;
+    }
+
+    /*
+    ** Attempt to initalize Camera
+    */
     if(init(&cam) == -1) // Error
     {
         OS_printf("Camera initialization error.\n");
@@ -57,7 +73,8 @@ int VC0706_takePics(void)
     int i;
     for (i=0; ;i++) // NOTE: we will need to add flash and MUX implementation. Easy, but should be broken into separate headers.
     {
-	char *v;
+	   char *v;
+
         /*
         ** Get camera version, another way to check that the camera is working properly. Also necessary for initialization.
         */
@@ -74,30 +91,34 @@ int VC0706_takePics(void)
         /*
         ** Set Path for the new image
         */
-	OS_printf("VC0706: Calling sprintf()...\n");
-	char * time = getTime();
-        int ret = sprintf(path, "/home/pi/TRAPSat/images/%s.jpg", time);
-	//int ret = sprintf(path, "/home/pi/TRAPSat/images/test_%d.jpg", i);
-	if(ret < 0)
-	{
-	    printf("sprintf err: %s\n", strerror(ret));
-	}
+	    OS_printf("VC0706: Calling sprintf()...\n");
+	    char * num_reboots = "und"; // initialized to undefined
+        //num_reboots = getNumReboots(); // not writen yet -- ask Keegan. 
+        int ret = sprintf(path, "/home/pi/TRAPSat/images/%s_%d.jpg", num_reboots, i);
+    	if(ret < 0)
+    	{
+    	    OS_printf("sprintf err: %s\n", strerror(ret));
+    	}
 
-	/*
+        /*
+        ** Switch Cameras -- Has not been tested with hardware yet
+        */
+        mux_switch(&mux);
+
+    	/*
         ** Actually takes the picture
         */
-	OS_printf("VC0706: Calling takePicture()...\n");
+    	OS_printf("VC0706: Calling takePicture()...\n");
         char* loc = takePicture(&cam, path);
-
         OS_printf("Debug: Camera took picture. Stored at: %s\n", loc);
 
-	} /* Infinite Camera capture Loop End Here */
+    	} /* Infinite Camera capture Loop End Here */
 
-    return(0);
+        return(0);
 }
 
 
-char * getTime(void)
+/*char * getTime(void)
 {
     char * curr_time;
     time_t raw_t;
@@ -120,4 +141,4 @@ char * getTime(void)
     }
 
     return curr_time;
-}
+}*/

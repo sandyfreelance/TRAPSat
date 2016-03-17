@@ -14,7 +14,7 @@ int VC0706_takePics(void);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
-/* VC0706 child task -- startup initialization                        */
+/* VC0706 child task -- startup initialization                     */
 /*                                                                 */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 

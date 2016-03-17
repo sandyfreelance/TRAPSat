@@ -13,13 +13,14 @@
 
 typedef struct { // Not sure how much should be implimented in this struct
 	int mux_select_pin; // Expects GPIO for mux select line
-	int mux_state; 		// 0 or 1 
+	int mux_state; 		// should always be 0 or 1 
 } mux_t;
 
 
-void mux_init(mux_t *mux, int select_pin);
+int mux_init(mux_t *mux, int select_pin);
 
 int mux_select(mux_t *mux, int select); // sanatized selection.
 
+int mux_switch(mux_t *mux); // swap selection
 
 #endif /* _vc0706_mux_h_ */

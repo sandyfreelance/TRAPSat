@@ -33,6 +33,16 @@ uint32             VC0706_ChildTaskID;
 
 
 /*
+** Mux struct - used to switch between the internal and external camera in vc0706_device.c
+*/
+mux_t mux;
+
+/*
+** LED struct - used to control LEDs as camera flash in vc0706_core.c takePicture()
+*/
+led_t led;
+
+/*
 ** Main Camera struct
 */
 Camera_t cam;

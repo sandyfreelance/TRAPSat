@@ -8,10 +8,11 @@
 *******************************************************************************/
 
 
-void mux_init(mux_t *mux, int select_pin) {
+int mux_init(mux_t *mux, int select_pin) {
 	mux->mux_select_pin = select_pin; 
 	pinMode(select_pin, OUTPUT); 
-	mux_select(mux, 0); // initialize low 
+	int ret = mux_select(mux, 0); // initialize low 
+	return ret;         
 }
 
 int mux_select(mux_t *mux, int select) { 
@@ -31,4 +32,12 @@ int mux_select(mux_t *mux, int select) {
 	{
 		return -1;
 	}
+}
+
+
+int mux_switch(mux_t *mux) { // swap selection
+	if(mux->mux_state == 0)
+		return mux_select(mux, 1);
+	else
+		return mux_select(mux, 0);
 }
