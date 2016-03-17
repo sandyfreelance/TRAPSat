@@ -6,13 +6,16 @@ int serial_out_init(serial_out_t *serial, char * port) // opens the serial port 
 	serial->data = 0x00;
 	if(serial->fd == -1)
 	{
-		OS_printf("serial_out: ERROR: %s", strerr(errno));
+		printf("serial_out: ERROR: %s", strerror(errno));
 		return -1;
 	}
-	return 0;
+	else
+	{
+		return 0;
+	}
 }
 
-void write_byte(serial_out_t *serial, unsigned char byte) // writes byte to serial port
+void serial_write_byte(serial_out_t *serial, unsigned char byte) // writes byte to serial port
 {
 	serialPutchar(serial->fd, byte);
 	serial->data = byte;

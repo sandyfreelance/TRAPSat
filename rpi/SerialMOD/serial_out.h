@@ -16,16 +16,16 @@
 
 #define BAUD 19200
 
+#include <stdio.h>
 #include <wiringPi.h>
 #include <errno.h>
 
-typedef serial_out_t {
+typedef struct serial_out_t {
 	int fd;
 	unsigned char data; //copy of last sent data -- maybe useful
 } serial_out_t;
 
 int serial_out_init(serial_out_t *serial, char * port); // opens the serial port and sets it to serial->fd
-void write_byte(serial_out_t *serial, unsigned char byte); // writes byte to serial port
+void serial_write_byte(serial_out_t *serial, unsigned char byte); // writes byte to serial port
 
 #endif /*_serial_out_h_*/
-
