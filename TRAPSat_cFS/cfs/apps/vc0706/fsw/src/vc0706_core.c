@@ -22,9 +22,7 @@ int init(Camera_t *cam) {
     if ((cam->fd = serialOpen("/dev/ttyAMA0", BAUD)) < 0)
     {
         //fprintf(stderr, "SPI Setup Failed: %s\n", strerror(errno));
-    	CFE_EVS_SendEvent(VC0706_CHILD_INIT_ERR_EID, CFE_EVS_ERROR, 
-            "vc0706_core::init Error: Failed to open specified port at %s. 
-            STDERR: %s\n", "/dev/ttyAMA0", strerror(errno));
+    	CFE_EVS_SendEvent(VC0706_CHILD_INIT_ERR_EID, CFE_EVS_ERROR, "vc0706_core::init Error: Failed to open specified port at %s. STDERR: %s\n", "/dev/ttyAMA0", strerror(errno));
     	return -1;
     }
 
@@ -65,12 +63,7 @@ bool checkReply(Camera_t *cam, int cmd, int size) {
     //Check the reply
     if (reply[0] != 0x76 && reply[1] != 0x00 && reply[2] != cmd)
     {
-        CFE_EVS_SendEvent(VC0706_REPLY_ERR_EID, CFE_EVS_ERROR, 
-                "vc0706_core::reply() Error: Camera unresponsive.\n
-                \treply[0]: %x, expected: %x\n
-                \treply[1]: %x, expected: %x\n
-                \treply[2]: %x, expected: %x\n
-                \t STRERROR: %s\n", reply[0], 0x76, reply[1], 0x00, reply[2], cmd, strerror(errno));
+        CFE_EVS_SendEvent(VC0706_REPLY_ERR_EID, CFE_EVS_ERROR,"vc0706_core::reply() Error: Camera unresponsive.\n\treply[0]: %x, expected: %x\n \treply[1]: %x, expected: %x\n\treply[2]: %x, expected: %x\n\tSTRERROR: %s\n", reply[0], 0x76, reply[1], 0x00, reply[2], cmd, strerror(errno));
         return false;
     }
     else
@@ -237,10 +230,7 @@ char * takePicture(Camera_t *cam, char * file_path)
 
     if(len > 20000){
         OS_printf("vc0706::takePicture() len:%u to Large. Should be <= 20000 \n", len);
-        CFE_EVS_SendEvent(VC0706_LEN_ERR_EID, CFE_EVS_ERROR, 
-            "vc0706_core::takePicture() Error: Image length reported from camera too large. 
-            len reported: %u, expected value <= 20000\n
-            \tAttempting to take another image with same name.\n", len);
+        CFE_EVS_SendEvent(VC0706_LEN_ERR_EID, CFE_EVS_ERROR, "vc0706_core::takePicture() Error: Image length reported from camera too large. len reported: %u, expected value <= 20000\n\tAttempting to take another image with same name.\n", len);
         resumeVideo(cam);
         clearBuffer(cam);
         return takePicture(cam, file_path);
@@ -324,10 +314,10 @@ char * takePicture(Camera_t *cam, char * file_path)
         size_t stored = fwrite(image, sizeof(image[0]), imgIndex, jpg);
         fclose(jpg);
 	//printf("VC0706: number of stored bytes:%zu\n", stored);
-	if((size_t)i != stored)
-	{
-    	    OS_printf("VC0706 ERROR: image stored %zu bytes, expected to store %d bytes\n", stored, i);
-	}
+	//if((size_t)i != stored)
+	//{
+    	//    OS_printf("VC0706 ERROR: image stored %zu bytes, expected to store %d bytes\n", stored, i);
+	//}
     }
     else
     {
