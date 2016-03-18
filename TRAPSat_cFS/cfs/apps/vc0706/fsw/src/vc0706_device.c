@@ -99,7 +99,8 @@ int VC0706_takePics(void)
         /*
         ** Switch Cameras -- Has not been tested with hardware yet
         */
-        mux_switch(&mux);
+        if( mux_switch(&mux) == -1)
+            OS_printf("vc0706::mux_switch() failed.\n");
 
     	/*
         ** Actually takes the picture

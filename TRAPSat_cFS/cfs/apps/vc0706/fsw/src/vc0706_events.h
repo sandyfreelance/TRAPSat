@@ -22,7 +22,9 @@
 #define VC0706_COMMANDNOP_INF_EID        3
 #define VC0706_COMMANDRST_INF_EID        4
 #define VC0706_INVALID_MSGID_ERR_EID     5
-#define VC0706_LEN_ERR_EID               6
+#define VC0706_LEN_ERR_EID               6 // used for checking ingress message length, and reply from camera length
+
+#define VC0706_REPLY_ERR_EID			 9
 // Will need commands for switch camera
 // possibly take specific picture or
 // just stop taking picture from specific

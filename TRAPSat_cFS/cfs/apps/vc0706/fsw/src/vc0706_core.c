@@ -21,14 +21,18 @@ int init(Camera_t *cam) {
 
     if ((cam->fd = serialOpen("/dev/ttyAMA0", BAUD)) < 0)
     {
-        fprintf(stderr, "SPI Setup Failed: %s\n", strerror(errno));
-    	printf("Camera SPI Setup failed.\n");
-    	    return -1;
+        //fprintf(stderr, "SPI Setup Failed: %s\n", strerror(errno));
+    	CFE_EVS_SendEvent(VC0706_CHILD_INIT_ERR_EID, CFE_EVS_ERROR, 
+            "vc0706_core::init Error: Failed to open specified port at %s. 
+            STDERR: %s\n", "/dev/ttyAMA0", strerror(errno));
+    	return -1;
     }
 
     if (wiringPiSetup() == -1)
     {
         OS_printf("wiringPiSetup(0 failed.\n");
+        CFE_EVS_SendEvent(VC0706_CHILD_INIT_ERR_EID, CFE_EVS_ERROR, 
+            "vc0706_core::init Error: wiringPiSetup() failed.\n");
 	    return -1;
     }
 
@@ -60,7 +64,15 @@ bool checkReply(Camera_t *cam, int cmd, int size) {
 
     //Check the reply
     if (reply[0] != 0x76 && reply[1] != 0x00 && reply[2] != cmd)
+    {
+        CFE_EVS_SendEvent(VC0706_REPLY_ERR_EID, CFE_EVS_ERROR, 
+                "vc0706_core::reply() Error: Camera unresponsive.\n
+                \treply[0]: %x, expected: %x\n
+                \treply[1]: %x, expected: %x\n
+                \treply[2]: %x, expected: %x\n
+                \t STRERROR: %s\n", reply[0], 0x76, reply[1], 0x00, reply[2], cmd, strerror(errno));
         return false;
+    }
     else
         return true;
 }
@@ -93,8 +105,9 @@ void reset(Camera_t *cam) {
     serialPutchar(cam->fd, (char)0x00);
 
     if (checkReply(cam, RESET, 5) != true)
-        fprintf(stderr, "Check Reply Status: %s\n", strerror(errno));
-
+    {
+        OS_printf("vc0706::reset() Check Reply Status: %s\n", strerror(errno));
+    }
     clearBuffer(cam);
 }
 
@@ -112,7 +125,7 @@ void resumeVideo(Camera_t *cam)
 
 char * getVersion(Camera_t *cam)
 {
-	printf("getVersion() called.\n");
+	//OS_printf("getVersion() called.\n");
     serialPutchar(cam->fd, (char)0x56);
     serialPutchar(cam->fd, (char)cam->serialNum);
     serialPutchar(cam->fd, (char)GEN_VERSION);
@@ -144,7 +157,7 @@ char * getVersion(Camera_t *cam)
     }
 
     cam->camerabuff[cam->bufferLen] = 0;
-	printf("getVersion() returning.\n");
+	//OS_printf("getVersion() returning.\n");
     return cam->camerabuff;
 }
 
@@ -172,7 +185,7 @@ char * takePicture(Camera_t *cam, char * file_path)
 {
     cam->frameptr = 0;
 
-	OS_printf("takePicture() called.\n");
+	//OS_printf("takePicture() called.\n");
 
     // Enable LED
     led_on(&led); // initialized in vc0706_device.c
@@ -223,7 +236,11 @@ char * takePicture(Camera_t *cam, char * file_path)
     OS_printf("Length %u \n", len);
 
     if(len > 20000){
-        OS_printf("To Large... \n");
+        OS_printf("vc0706::takePicture() len:%u to Large. Should be <= 20000 \n", len);
+        CFE_EVS_SendEvent(VC0706_LEN_ERR_EID, CFE_EVS_ERROR, 
+            "vc0706_core::takePicture() Error: Image length reported from camera too large. 
+            len reported: %u, expected value <= 20000\n
+            \tAttempting to take another image with same name.\n", len);
         resumeVideo(cam);
         clearBuffer(cam);
         return takePicture(cam, file_path);
