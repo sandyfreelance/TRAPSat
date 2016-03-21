@@ -18,7 +18,7 @@ int init(Camera_t *cam) {
     cam->serialNum = 0;
     cam->motion = 1;
     cam->ready = 1;
-
+    cam->empty = "";
     if ((cam->fd = serialOpen("/dev/ttyAMA0", BAUD)) < 0)
     {
         //fprintf(stderr, "SPI Setup Failed: %s\n", strerror(errno));
@@ -118,7 +118,7 @@ void resumeVideo(Camera_t *cam)
 
 char * getVersion(Camera_t *cam)
 {
-	//OS_printf("getVersion() called.\n");
+    OS_printf("getVersion() called.\n");
     serialPutchar(cam->fd, (char)0x56);
     serialPutchar(cam->fd, (char)cam->serialNum);
     serialPutchar(cam->fd, (char)GEN_VERSION);
@@ -127,6 +127,7 @@ char * getVersion(Camera_t *cam)
     if (checkReply(cam, GEN_VERSION, 5) == false)
     {
         OS_printf("CAMERA NOT FOUND!!!\n");
+	return (char *)NULL;
     }
 
     int counter = 0;
@@ -150,7 +151,7 @@ char * getVersion(Camera_t *cam)
     }
 
     cam->camerabuff[cam->bufferLen] = 0;
-	//OS_printf("getVersion() returning.\n");
+    OS_printf("getVersion() returning.\n");
     return cam->camerabuff;
 }
 
@@ -178,7 +179,7 @@ char * takePicture(Camera_t *cam, char * file_path)
 {
     cam->frameptr = 0;
 
-	//OS_printf("takePicture() called.\n");
+    OS_printf("takePicture() called.\n");
 
     // Enable LED
     led_on(&led); // initialized in vc0706_device.c
@@ -198,8 +199,10 @@ char * takePicture(Camera_t *cam, char * file_path)
     if (checkReply(cam, FBUF_CTRL, 5) == false)
     {
         OS_printf("Frame checkReply Failed\n");
-        return &cam->empty;
+        return cam->empty;
     }
+
+    OS_printf("VC0706_core::takePicture() retrieving FBUFF_LEN...\n");
 
     serialPutchar(cam->fd, (char)0x56);
     serialPutchar(cam->fd, (char)cam->serialNum);
@@ -210,7 +213,7 @@ char * takePicture(Camera_t *cam, char * file_path)
     if (checkReply(cam, GET_FBUF_LEN, 5) == false)
     {
         OS_printf("FBUF_LEN REPLY NOT VALID!!!\n");
-        return &cam->empty;
+        return cam->empty;
     }
 
     while(serialDataAvail(cam->fd) <= 0){;}
@@ -265,7 +268,7 @@ char * takePicture(Camera_t *cam, char * file_path)
         if (checkReply(cam, READ_FBUF, 5) == false)
         {
 	    OS_printf("VC0706: Error! checkReply(cam, READ_FBUF, 5) returned false.\n");
-            return &cam->empty;
+            return cam->empty;
         }
 
         int counter = 0;
@@ -301,18 +304,21 @@ char * takePicture(Camera_t *cam, char * file_path)
     }
 
     OS_printf("VC0706_CORE: Attempting to open file...\n");
-    FILE *jpg = fopen(file_path, "w");
-    if (jpg != NULL)
-    {
-	// test
-	int i=0;
-	while(image[i] != '\0')
-	{
-		i++;
-	}
+    // FILE *jpg = fopen(file_path, "w");
+    int32 pic_fd = OS_creat(file_path, (int32)OS_READ_WRITE);
+    //if (jpg != NULL)
+    if(!(pic_fd < OS_FS_SUCCESS)) // if successful file creat
+    {	// test
+	//int i=0;
+	//while(image[i] != '\0')
+	//{
+	//	i++;
+	//}
 	//printf("VC0706: Manual determined length of image: %d bytes\n", i);
-        size_t stored = fwrite(image, sizeof(image[0]), imgIndex, jpg);
-        fclose(jpg);
+        //size_t stored = fwrite(image, sizeof(image[0]), imgIndex, jpg);
+        //fclose(jpg);
+	OS_write(pic_fd, (void *)image, imgIndex);
+	OS_close(pic_fd);
 	//printf("VC0706: number of stored bytes:%zu\n", stored);
 	//if((size_t)i != stored)
 	//{
@@ -322,10 +328,11 @@ char * takePicture(Camera_t *cam, char * file_path)
     else
     {
         OS_printf("IMAGE COULD NOT BE OPENED/MADE!\n");
+v	return (char *)NULL;
     }
 
-    OS_printf("VC0706: copying file_path <%s> to imageName\n", file_path);
-    strcpy(cam->imageName, file_path);
+    //OS_printf("VC0706: copying file_path <%s> of size %d to imageName\n", file_path, strlen(file_path));
+    strncpy(cam->imageName, file_path, strlen(file_path));
     resumeVideo(cam);
 
     //Clear Buffer

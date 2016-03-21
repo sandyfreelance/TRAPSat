@@ -15,7 +15,7 @@
 
 typedef struct mux_t { // Not sure how much should be implimented in this struct
 	int mux_select_pin; // Expects GPIO for mux select line
-	int mux_state; 		// should always be 0 or 1 
+	int mux_state; 		// should always be 0 or 1
 } mux_t;
 
 
