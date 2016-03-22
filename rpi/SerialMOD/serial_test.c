@@ -20,10 +20,18 @@ int main(void)
 		return -1;
 	}
 	int i;
-	for(i=0; i<10; i++) // infinite loop
+	for(i=65;;i++) // infinite loop
 	{
-		serial_write_byte(&serial_usb, 0xFF); // write all 1s
+		if(i == 91) // set to ascii A->Z
+		{
+			serial_write_byte(&serial_usb, 10); // write \n
+			serial_write_byte(&serial_usb, 13); // write \n	
+			i = 65; // reset to A
+			
+		}
+		serial_write_byte(&serial_usb, i); // write data
 		printf("serial_usb.data: %x\n", serial_usb.data);
+		
 	}
 
 
