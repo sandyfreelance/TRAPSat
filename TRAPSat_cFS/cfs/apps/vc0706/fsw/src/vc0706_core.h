@@ -89,7 +89,7 @@ bool checkReply(Camera_t *cam, int cmd, int size);
 void clearBuffer(Camera_t *cam);
 void reset(Camera_t *cam);
 void resumeVideo(Camera_t *cam);
-char * getVersion(Camera_t *cam);
+int  getVersion(Camera_t *cam, char * vbuff);
 void setMotionDetect(Camera_t *cam, int flag);
 char * takePicture(Camera_t *cam, char * file_path);
 

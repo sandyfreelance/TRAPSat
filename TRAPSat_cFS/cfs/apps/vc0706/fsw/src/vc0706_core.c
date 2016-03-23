@@ -61,7 +61,7 @@ bool checkReply(Camera_t *cam, int cmd, int size) {
     }
 
     //Check the reply
-    if (reply[0] != 0x76 && reply[1] != 0x00 && reply[2] != cmd)
+    if (reply[0] != 0x76 || reply[1] != 0x00 || reply[2] != cmd)
     {
         CFE_EVS_SendEvent(VC0706_REPLY_ERR_EID, CFE_EVS_ERROR,"vc0706_core::reply() Error: Camera unresponsive.\n\treply[0]: %x, expected: %x\n \treply[1]: %x, expected: %x\n\treply[2]: %x, expected: %x\n\tSTRERROR: %s\n", reply[0], 0x76, reply[1], 0x00, reply[2], cmd, strerror(errno));
         return false;
@@ -116,7 +116,7 @@ void resumeVideo(Camera_t *cam)
         OS_printf("Camera did not resume\n");
 }
 
-char * getVersion(Camera_t *cam)
+int getVersion(Camera_t *cam, char* vbuff)
 {
     OS_printf("getVersion() called.\n");
     serialPutchar(cam->fd, (char)0x56);
@@ -124,12 +124,13 @@ char * getVersion(Camera_t *cam)
     serialPutchar(cam->fd, (char)GEN_VERSION);
     serialPutchar(cam->fd, (char)0x00);
 
-    if (checkReply(cam, GEN_VERSION, 5) == false)
+    bool reply;
+    if ((reply = checkReply(cam, GEN_VERSION, 5)) == false)
     {
         OS_printf("CAMERA NOT FOUND!!!\n");
-	return (char *)NULL;
+	return -1;
     }
-
+	OS_printf("VC0706: check Reply returned: %d", reply);
     int counter = 0;
     cam->bufferLen = 0;
     int avail = 0;
@@ -152,7 +153,8 @@ char * getVersion(Camera_t *cam)
 
     cam->camerabuff[cam->bufferLen] = 0;
     OS_printf("getVersion() returning.\n");
-    return cam->camerabuff;
+    vbuff = (char *)cam->camerabuff;
+    return 0;
 }
 
 void setMotionDetect(Camera_t *cam, int flag)
@@ -328,10 +330,11 @@ char * takePicture(Camera_t *cam, char * file_path)
     else
     {
         OS_printf("IMAGE COULD NOT BE OPENED/MADE!\n");
-v	return (char *)NULL;
+	return (char *)NULL;
     }
 
-    //OS_printf("VC0706: copying file_path <%s> of size %d to imageName\n", file_path, strlen(file_path));
+    OS_printf("VC0706: copying file_path <%s> of size %d to imageName\n", file_path, strlen(file_path));
+    //strcpy(cam->imageName, file_path);
     strncpy(cam->imageName, file_path, strlen(file_path));
     resumeVideo(cam);
 

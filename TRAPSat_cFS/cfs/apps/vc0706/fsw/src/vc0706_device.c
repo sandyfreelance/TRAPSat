@@ -17,6 +17,7 @@
 /*
 ** External References
 */
+extern vc0706_hk_tlm_t VC0706_HkTelemetryPkt;
 extern struct led_t led;
 extern struct mux_t mux;
 extern struct Camera_t cam;
@@ -71,16 +72,16 @@ int VC0706_takePics(void)
         ** NOTE: Not sure if this should be done every loop iteration. It is a good way to check on the Camera, but maybe wasteful of time.
         */
         char *v;
-		if ((v = getVersion(&cam)) == (char *)NULL) // function will return (char *)NULL upon failure
+	if ((getVersion(&cam, v)) == -1)
         {
             OS_printf( "Failed communication to Camera.\n"); // NOTE: vc0706_core::checkReply() does CVE logging.
             // return -1; // should never stop the task, just keep trying.
             continue; // loop start over
-		}
+	}
         else
         {
             OS_printf("Debug: Camera open with version = \'%s\'\n", v);
-		}
+	}
 
         /*
         ** Set Path for the new image
@@ -91,7 +92,7 @@ int VC0706_takePics(void)
 		//OS_printf("VC0706: Calling sprintf()...\n");
 		unsigned int num_reboots = 0; // initialized to undefined
         //num_reboots = getNumReboots(); // not writen yet -- ask Keegan.
-        int ret = sprintf(path, "/ram/images/%.3u_%d_%.3u.jpg", num_reboots, mux.mux_state, num_pics_stored); // cFS /exe relative path
+        int ret = sprintf(path, "/ram/images/%.3u_%d_%.4u.jpg", num_reboots, mux.mux_state, num_pics_stored); // cFS /exe relative path
     	if(ret < 0)
     	{
     	    OS_printf("sprintf err: %s\n", strerror(ret));
@@ -113,21 +114,25 @@ int VC0706_takePics(void)
         char* pic_file_name = takePicture(&cam, path);
         if(pic_file_name != (char *)NULL)
 		{
-		    OS_printf("Debug: Camera took picture. Stored at: %s\n", pic_file_loc);
-		    
+		    OS_printf("Debug: Camera took picture. Stored at: %s\n", pic_file_name);
+
 		    /*
 		    ** Put Image name on telem packet
 		    */
-		    if( (hk_packet_succes = strncpy(vc0706_hk_tlm_t.vc0706_filename, pic_file_name[12], 14)) < 0 ) // only use the filename, not path.
+		    if( (hk_packet_succes = snprintf(VC0706_HkTelemetryPkt.vc0706_filename, 14, "%.*s", 14, (char *)pic_file_name+12)) < 0 ) // only use the filename, not path.
 		    {
-		    	OS_printf("VC0706: ERROR: Failed to write Picture Filename to HK Packet. Attempted to send: '%.*s'\n\tstrncpy returned: '%d'\n", 14, pic_file_name[12], hk_packet_succes);
+		    	OS_printf("VC0706: ERROR: Failed to write Picture Filename to HK Packet. Attempted to send: '%.*s'\n\tstrncpy returned: '%d'\n", 14, (char * )&pic_file_name[12], hk_packet_succes);
 		    	// continue
+		    }
+		    else
+		    {
+			OS_printf("VC0706: Wrote Picture Filename to HK Packet. Sent: '%.*s'\n", 14, (char * )&pic_file_name[12], hk_packet_succes);
 		    }
 
 		    /*
 		    ** incriment num pics for filename
 		    */
-		    num_pics_stored++; 
+		    num_pics_stored++;
 		} // else continue
 
     } /* Infinite Camera capture Loop End Here */

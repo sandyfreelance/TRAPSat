@@ -1,8 +1,8 @@
 /*******************************************************************************
 ** File:
-**   vc0706_msg.h 
+**   vc0706_msg.h
 **
-** Purpose: 
+** Purpose:
 **  Define VC0706 App  Messages and info
 **
 ** Notes:
@@ -37,7 +37,7 @@ typedef struct
     uint8              TlmHeader[CFE_SB_TLM_HDR_SIZE];
     uint8              vc0706_command_error_count;
     uint8              vc0706_command_count;
-    uint8              vc0706_filename[VC0706_MAX_FILENAME_LEN];
+    char               vc0706_filename[VC0706_MAX_FILENAME_LEN];
 
 }   OS_PACK vc0706_hk_tlm_t  ;
 
