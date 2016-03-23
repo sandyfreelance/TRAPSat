@@ -130,7 +130,7 @@ int getVersion(Camera_t *cam)
         OS_printf("CAMERA NOT FOUND!!!\n");
 	return -1;
     }
-	OS_printf("VC0706: check Reply returned: %d", reply);
+	OS_printf("VC0706: check Reply returned: %d\n", reply);
     int counter = 0;
     cam->bufferLen = 0;
     int avail = 0;

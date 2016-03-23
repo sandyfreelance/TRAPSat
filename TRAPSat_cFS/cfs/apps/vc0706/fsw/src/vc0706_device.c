@@ -114,14 +114,14 @@ int VC0706_takePics(void)
 		    /*
 		    ** Put Image name on telem packet
 		    */
-		    if( (hk_packet_succes = snprintf(VC0706_HkTelemetryPkt.vc0706_filename, 14, "%.*s", 14, (char *)pic_file_name+12)) < 0 ) // only use the filename, not path.
+		    if( (hk_packet_succes = snprintf(VC0706_HkTelemetryPkt.vc0706_filename, 15, "%.*s", 15, (char *)pic_file_name+12)) < 0 ) // only use the filename, not path.
 		    {
-		    	OS_printf("VC0706: ERROR: Failed to write Picture Filename to HK Packet. Attempted to send: '%.*s'\n\tstrncpy returned: '%d'\n", 14, (char * )&pic_file_name[12], hk_packet_succes);
+		    	OS_printf("VC0706: ERROR: Failed to write Picture Filename to HK Packet. Attempted to send: '%.*s'\n\tstrncpy returned: '%d'\n", 15, (char * )&pic_file_name[12], hk_packet_succes);
 		    	// continue
 		    }
 		    else
 		    {
-			OS_printf("VC0706: Wrote Picture Filename to HK Packet. Sent: '%.*s'\n", 14, (char * )&pic_file_name[12], hk_packet_succes);
+			OS_printf("VC0706: Wrote Picture Filename to HK Packet. Sent: '%.*s'\n", 15, (char * )&pic_file_name[12], hk_packet_succes);
 		    }
 		    OS_printf("VC0706: VC0706_HkTelemetryPkt.vc0706_filename: '%s'\n", VC0706_HkTelemetryPkt.vc0706_filename);
 
