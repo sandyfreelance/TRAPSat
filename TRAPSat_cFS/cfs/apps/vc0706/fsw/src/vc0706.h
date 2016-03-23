@@ -11,8 +11,9 @@
 #define _vc0706_h_
 
 
-#define MUX_SEL_PIN	13	// GPIO pin for SN74 Select line
-#define LED_PIN		16	// GPIO pin for LEDs
+#define MUX_SEL_PIN				13	// GPIO pin for SN74 Select line
+#define LED_PIN					16	// GPIO pin for LEDs
+#define VC0706_MAX_FILENAME_LEN 24  // Maximum expected filename length /ram/images/<reboots [3 char]>_<cam 0 or 1 [1 char]>_<filenum [3 char]>.jpg
 
 /*
 ** Required header files.
