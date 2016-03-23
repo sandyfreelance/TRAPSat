@@ -116,7 +116,7 @@ void resumeVideo(Camera_t *cam)
         OS_printf("Camera did not resume\n");
 }
 
-int getVersion(Camera_t *cam, char* vbuff)
+int getVersion(Camera_t *cam)
 {
     OS_printf("getVersion() called.\n");
     serialPutchar(cam->fd, (char)0x56);
@@ -152,8 +152,8 @@ int getVersion(Camera_t *cam, char* vbuff)
     }
 
     cam->camerabuff[cam->bufferLen] = 0;
+    OS_printf("VC0706: camera Version: '%s'\n", (char *)cam->camerabuff);
     OS_printf("getVersion() returning.\n");
-    vbuff = (char *)cam->camerabuff;
     return 0;
 }
 

@@ -71,23 +71,18 @@ int VC0706_takePics(void)
         **
         ** NOTE: Not sure if this should be done every loop iteration. It is a good way to check on the Camera, but maybe wasteful of time.
         */
-        char *v;
-	if ((getVersion(&cam, v)) == -1)
+	if ((getVersion(&cam)) == -1)
         {
             OS_printf( "Failed communication to Camera.\n"); // NOTE: vc0706_core::checkReply() does CVE logging.
             // return -1; // should never stop the task, just keep trying.
             continue; // loop start over
 	}
-        else
-        {
-            OS_printf("Debug: Camera open with version = \'%s\'\n", v);
-	}
 
         /*
         ** Set Path for the new image
-		**
-		** Format:
-		** /ram/images/<num_reboots>_<camera 0 or 1>_<num_pics_stored>.jpg
+	**
+	** Format:
+	** /ram/images/<num_reboots>_<camera 0 or 1>_<num_pics_stored>.jpg
         */
 		//OS_printf("VC0706: Calling sprintf()...\n");
 		unsigned int num_reboots = 0; // initialized to undefined
@@ -128,6 +123,7 @@ int VC0706_takePics(void)
 		    {
 			OS_printf("VC0706: Wrote Picture Filename to HK Packet. Sent: '%.*s'\n", 14, (char * )&pic_file_name[12], hk_packet_succes);
 		    }
+		    OS_printf("VC0706: VC0706_HkTelemetryPkt.vc0706_filename: '%s'\n", VC0706_HkTelemetryPkt.vc0706_filename);
 
 		    /*
 		    ** incriment num pics for filename

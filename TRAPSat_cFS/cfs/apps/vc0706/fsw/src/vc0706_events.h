@@ -1,8 +1,8 @@
 /************************************************************************
 ** File:
-**    vc0706_events.h 
+**    vc0706_events.h
 **
-** Purpose: 
+** Purpose:
 **  Define VC0706 App Events IDs
 **
 ** Notes:
